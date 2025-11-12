@@ -1,0 +1,52 @@
+@startuml
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+skinparam classFontStyle Bold
+
+package view
+{
+}
+
+
+package controller
+{
+}
+
+package model
+{
+    package grid
+    {
+        abstract class Tile <<abstract>>
+        {
+            -m_
+        }
+        abstract class WaterTile
+        {
+
+        }
+        abstract class LandTile
+        {
+
+        }
+
+    }
+    package weapon
+    {
+        class Weapon
+        {
+            -m_name : String
+        }
+    }
+    package trap
+    {
+        class Trap
+        {
+        }
+    }
+
+
+
+}
+
+
+@enduml
