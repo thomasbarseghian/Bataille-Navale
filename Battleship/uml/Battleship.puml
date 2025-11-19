@@ -2,7 +2,7 @@
 skinparam style strictuml
 skinparam classAttributeIconSize 0
 skinparam classFontStyle bold
-
+hide enum methods
 
 package view {
 }
@@ -10,38 +10,24 @@ package view {
 package controller {
 }
 
-package model {
-    package grid {
-        class Grid {
+package model
+{
+    package grid
+    {
+        class Grid
+        {
             -m_size : Integer
             +createGrid(size : Integer)
         }
 
-        class Tile {
-        }
-    }
-
-    package grid
-    {
-        abstract class Tile <<abstract>>
+        class Tile
         {
-            -m_
+            -isHit : boolean
         }
-        abstract class WaterTile
+        enum TileType
         {
-
-        }
-        abstract class LandTile
-        {
-
-        }
-
-    }
-    package weapon
-    {
-        class Weapon
-        {
-            -m_name : String
+            WATER
+            LAND
         }
     }
     package placableObject
@@ -50,34 +36,40 @@ package model {
         {
 
         }
-        package trap
+        class Trap implements model.placableObject.PlaceableObject
         {
-            class Trap
-            {
-            }
+
         }
-        class Ship {
+        class Ship implements model.placableObject.PlaceableObject
+        {
             -m_name : String
             -m_size : Integer
             -m_pv : Integer
             -m_direction : Integer
             -m_isDestroyed : Boolean
         }
-
-        package weapon
+        class Weapon implements model.placableObject.PlaceableObject
         {
-            class Weapon
-            {
-                -m_name : String
-            }
+            -m_name : String
         }
     }
+    package Player
+    {
+        class Player
+        {
+
+        }
+        class AI
+        {
+
+        }
+    }
+
 }
 
 
-model.grid.Grid *--> "*" model.grid.Tile : -m_grid contient des Tile
-Trap -up-|> model.placableObject.PlaceableObject
-Ship -up-|> model.placableObject.PlaceableObject
-model.placableObject.weapon.Weapon -up-|> model.placableObject.PlaceableObject
+model.grid.Grid *--> "* -m_grid" model.grid.Tile : > is made of
+model.grid.Tile *--> "1 -m_object" model.placableObject.PlaceableObject : > has elements of the type
+Grid *-> "1" model.grid.TileType : > is of the type\t
 
 @enduml
