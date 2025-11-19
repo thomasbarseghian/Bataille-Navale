@@ -1,0 +1,40 @@
+@startuml
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+
+package view {
+}
+
+package controller {
+}
+
+package model {
+    package grid {
+        class Grid {
+            -m_size : Integer
+            +createGrid(size : Integer)
+        }
+
+        class Tile {
+        }
+    }
+
+    class Ship {
+        -m_name : String
+        -m_size : Integer
+        -m_pv : Integer
+        -m_direction : Integer
+        -m_isDestroyed : Boolean
+    }
+
+    class LightColor {
+    }
+
+    class SwitchGermany {
+        -_lastColor : LightColor
+    }
+}
+
+model.grid.Grid *--> "*" model.grid.Tile : -m_grid contient des Tile
+@enduml
