@@ -3,6 +3,7 @@ skinparam style strictuml
 skinparam classAttributeIconSize 0
 skinparam classFontStyle bold
 
+
 package view {
 }
 
@@ -20,36 +21,34 @@ package model {
         }
     }
 
-    class Ship {
-        -m_name : String
-        -m_size : Integer
-        -m_pv : Integer
-        -m_direction : Integer
-        -m_isDestroyed : Boolean
-    }
-
     package grid
+    {
+        abstract class Tile <<abstract>>
         {
-            abstract class Tile <<abstract>>
-            {
-                -m_
-            }
-            abstract class WaterTile
-            {
-
-            }
-            abstract class LandTile
-            {
-
-            }
+            -m_
+        }
+        abstract class WaterTile
+        {
 
         }
-        package weapon
+        abstract class LandTile
         {
-            class Weapon
-            {
-                -m_name : String
-            }
+
+        }
+
+    }
+    package weapon
+    {
+        class Weapon
+        {
+            -m_name : String
+        }
+    }
+    package placableObject
+    {
+        interface PlacableObject <<interface>>
+        {
+
         }
         package trap
         {
@@ -57,8 +56,28 @@ package model {
             {
             }
         }
+        class Ship {
+            -m_name : String
+            -m_size : Integer
+            -m_pv : Integer
+            -m_direction : Integer
+            -m_isDestroyed : Boolean
+        }
+
+        package weapon
+        {
+            class Weapon
+            {
+                -m_name : String
+            }
+        }
+    }
 }
 
+
 model.grid.Grid *--> "*" model.grid.Tile : -m_grid contient des Tile
+Trap -up-|> model.placableObject.PlaceableObject
+Ship -up-|> model.placableObject.PlaceableObject
+model.placableObject.weapon.Weapon -up-|> model.placableObject.PlaceableObject
 
 @enduml
