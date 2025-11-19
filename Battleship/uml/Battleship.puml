@@ -28,13 +28,37 @@ package model {
         -m_isDestroyed : Boolean
     }
 
-    class LightColor {
-    }
+    package grid
+        {
+            abstract class Tile <<abstract>>
+            {
+                -m_
+            }
+            abstract class WaterTile
+            {
 
-    class SwitchGermany {
-        -_lastColor : LightColor
-    }
+            }
+            abstract class LandTile
+            {
+
+            }
+
+        }
+        package weapon
+        {
+            class Weapon
+            {
+                -m_name : String
+            }
+        }
+        package trap
+        {
+            class Trap
+            {
+            }
+        }
 }
 
 model.grid.Grid *--> "*" model.grid.Tile : -m_grid contient des Tile
+
 @enduml
