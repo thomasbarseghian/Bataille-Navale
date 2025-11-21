@@ -1,128 +1,137 @@
 @startuml
 skinparam style strictuml
-skinparam classAttributeIconSize 0
+skinparam classAttributelconSize 0
 skinparam classFontStyle bold
 hide enum methods
-
 package view {
 }
-
 package controller {
 }
-
-package model {
-    package grid {
-        class Grid {
-            -m_size : Integer
-            +createGrid(size : Integer)
-        }
-
-        abstract class Tile <<abstract>>
-        {
-            -m_
-        }
-        abstract class WaterTile extends Tile
-        {
-
-        }
-        abstract class LandTile extends Tile
-        {
-
-        }
-
-    }
-
-    package placableObject
-    {
-        interface PlacableObject <<interface>>
-        {
-
-        }
-        class Trap <<abstract>> implements PlacableObject
-        {
-
-        }
-        class Blackhole extends Trap
-        {
-
-        }
-        class Tornado extends Trap
-        {
-
-        }
-        class Ship <<abstract>> implements PlacableObject
-        {
-            -m_size : Integer
-            -m_pv : Integer
-            -m_direction : Integer
-            +<<Create>> Ship()
-        }
-        class AircraftCarrier extends Ship
-        {
-            +<<Create>> AircraftCarrier()
-        }
-        class Cruiser extends Ship
-        {
-            +<<Create>> Cruiser()
-        }
-        class Destroyer extends Ship
-        {
-            +<<Create>> Destroyer()
-        }
-        class Submarine extends Ship
-        {
-            +<<Create>> AircraftCarrier()
-        }
-        class TorpedoBoat extends Ship
-        {
-            +<<Create>> TorpedoBoat()
-        }
-
-        class Weapon <<abstract>> implements PlacableObject
-        {
-            -m_name : String
-        }
-        class Bombe extends Weapon
-        {
-
-        }
-        class Sonar extends Weapon
-        {
-
-        }
-        enum ShipType
-        {
-        AIRCRAFTCARRIER
-        CRUISER
-        DESTROYER
-        SUBMARINE
-        TORPEDOBOAT
-        }
-        enum Direction
-        {
-        HORIZONTAL
-        VERTICAL
-        }
-        enum TrapType
-        {
-        BLACKHOLE
-        TORNADO
-        }
-        enum WeaponType
-        {
-        BOMBE
-        SONAR
-        }
-    }
+package model
 }
-
-
-model.grid.Grid *--> "*" model.grid.Tile : -m_grid contient des Tile
-
-model.placableObject.Trap "1" o--> "-m_trapType" model.placableObject.TrapType : > is of the type
-model.placableObject.Ship "1" o--> "-m_shipType" model.placableObject.ShipType : > is of the type
-model.placableObject.Ship "1" o--> "-m_direction" model.placableObject.Direction : > is in this direction
-model.placableObject.Weapon "1" o--> "-m_weaponType" model.placableObject.WeaponType : > is of the type
-
-
+}
+package grid
+{
+}
+class Grid
+-m_size : Integer
++createGrid(size : Integer)
+}
+}
+}
+}
+class Tile
+-isHit: boolean
+enum Tile Type
+}
+WATER
+LAND
+{
+package placableObject
+interface PlacableObject <<interface>>
+}
+class Trap <<abstract>> implements
+PlacableObject
+{
+}
+class Blackhole extends Trap
+{
+}
+class Tornado extends Trap
+{
+class Ship <<abstract>> implements
+PlacableObject
+}
+}
+}
+-m_size : Integer
+-m_pv: Integer
+-m_direction: Integer
++<<Create>> Ship()
+class AircraftCarrier extends Ship
++<<Create>> AircraftCarrier()
+}
+class Cruiser extends Ship
+|{
+}
++<<Create>> Cruiser()
+class Destroyer extends Ship
+}
++<<Create>> Destroyer()
+}
+class Submarine extends Ship
+}
+{
+}
++<<Create>> AircraftCarrier()
+class TorpedoBoat extends Ship
++<<Create>> TorpedoBoat()
+}
+class Weapon <<abstract>>
+implements PlacableObject
+{
+-m_name: String
+}
+class Bombe extends Weapon
+}
+}
+class Sonar extends Weapon
+{
+}
+{
+enum Ship Type
+AIRCRAFTCARRIER
+CRUISER
+DESTROYER
+SUBMARINE
+TORPEDOBOAT
+enum Direction
+{
+HORIZONTAL
+VERTICAL
+}
+}
+}
+}
+enum TrapType
+BLACKHOLE
+TORNADO
+}
+}
+enum WeaponTypе
+BOMBE
+SONAR
+{
+package Player
+class Player
+{
+}
+class Al
+}
+}
+}
+model.grid.Grid *--> "* -m_grid"
+model.grid. Tile : > is made of
+model.grid.Tile *--> "1 -m_object"
+model.placableObject.PlaceableObject:
+has elements of the type
+:>
+Grid *-> "1" model.grid.TileType : > is of the
+type\t
+model.placableObject. Trap "1" 0--> "-
+m_trapTypе"
+model.placableObject. TrapType: > is of
+the type
+model.placableObject.Ship "1" 0--> "-
+m_shipTyрe"
+model.placableObject.Ship Type: > is of
+the type
+model.placableObject.Ship "1" o--> "-
+m_direction"
+model.placableObject.Direction : > is in
+this direction
+model.placableObject.Weapon "1" o--> "-
+m_weaponType"
+model.placableObject.WeaponType : > is
+of the typе
 @enduml
