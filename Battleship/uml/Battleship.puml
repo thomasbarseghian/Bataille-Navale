@@ -16,12 +16,15 @@ package model
         class Grid
         {
             -m_size : Integer
+            +<<Create>>Grid()
             +createGrid(size : Integer)
+            +PlaceObject(object: PlacableObject, grid : Grid)
         } 
 
         class Tile
         {
-            -isHit : boolean
+            -isHit : Boolean
+            +<<Create>>Tile()
         }
         enum TileType
         {
@@ -37,15 +40,19 @@ package model
         }
         class Trap <<abstract>> implements PlacableObject
         { 
-
+            +<<Create>>Trap()
+            +Activate()
         }
         class Blackhole extends Trap
         { 
-
+            +<<Create>>Blackhole()
+            +Activate(oppenentGrid : Grid, pos : Integer)
         }
         class Tornado extends Trap
         { 
-
+            +<<Create>>Tornado()
+            +Activate(player : Player)
+            +Scramble(oppenentGrid : Grid)
         }
         class Ship <<abstract>> implements PlacableObject
         {
@@ -77,15 +84,28 @@ package model
 
         class Weapon <<abstract>> implements PlacableObject
         {
-            -m_name : String
+            +<<Create>>Weapon()
+            +Use(oppenentGrid : Grid, pos : Integer)
+        }
+        class Missile extends Weapon
+        {
+            +<<Create>>Missile()
+            +Use(oppenentGrid : Grid, pos : Integer)
         }
         class Bombe extends Weapon
         { 
-
+            +<<Create>>Bombe()
+            +Use(oppenentGrid : Grid, pos : Integer)
         }
         class Sonar extends Weapon
         { 
-
+            +<<Create>>Sonar()
+            +Use(oppenentGrid : Grid, pos : Integer)
+        }
+        class Shovel extends Weapon
+        {
+            +<<Create>>Sonar()
+            +Use(oppenentGrid : Grid, pos : Integer)
         }
         enum ShipType
         {
@@ -107,49 +127,65 @@ package model
         }
         enum WeaponType
         {
+        MISSILE
         BOMBE
         SONAR
+        SHOVEL
         }
     }
     package Player
     {
     class Player <<abstract>>
     {
-	+PlaceBoatFix(gird : Grid)
-	+PlaceBoatRandom(grid : Grid)
-	+PlaceTrapFix(gird : Grid)
-	+PlaceTrapRandom(grid : Grid)
-	+PlaceWeaponRandom(grid: Grid)
+    +<<Create>>Player()
+	+PlaceBoatFix()
+	+PlaceBoatRandom()
+	+PlaceTrapFix()
+	+PlaceTrapRandom()
+	+PlaceWeaponRandom()
     }
     class Human extends Player
     {
-	+PlaceBoatCustom(grid : Grid)
-	+PlaceTrapCustom(grid : Grid)
-	+Attack(grid : Grid)
-	+PlaceWeaponCustom(grid : Grid) 
+    +<<Create>>Human()
+	+PlaceBoatCustom(pos : Integer, ship : Ship)
+	+PlaceTrapCustom(pos : Integer, trap : Trap)
+	+PlaceWeaponCustom(pos : Integer, weapon : Weapon)
+    +Attack(opponentGrid : Grid, pos : Integer, weapon : Weapon)
     }
     class AI extends Player
     {
-	+AttackRandom(grid : Grid)
-	+AttackWithTought(grid: Grid)
+    -m_tilesHit : Integer[*]
+	+<<Create>>AI()
+	+AttackRandom(opponentGrid : Grid,weapon : Weapon)
+	+AttackWithTought(opponentGrid: Grid,weapon : Weapon)
     }
     }
     package Game {
-	class Game {
-		+startGame()
-	}
-	class Utils
-	{
-		+PlaceObject(object: PlacableObject, grid : Grid)
-	}
+        class Game {
+            +<<Create>>Game()
+            +startGame()
+        }
+        enum GameState{
+            CONFIGURATION,
+            PLACEMENT,
+            PLAYING,
+            END
+        }
     }
 }
-model.grid.Grid *--> "* -m_grid" model.grid.Tile : > is made of
-model.grid.Tile *--> "1 -m_object" model.placableObject.PlacableObject: > has elements of the type
-Grid *-> "1" model.grid.TileType : > is of the type\t
+model.Game.Game "1" o--> "-m_gameState" model.Game.GameState: > is currently in
+model.Game.Game "2" o--> "-m_players" model.Player.Player: > is played by
+model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
+model.grid.Tile "1" *--> "-m_object" model.placableObject.PlacableObject: > has elements of the type
+model.grid.Tile *-> "1" model.grid.TileType : > is of the type\t
 model.placableObject.Trap "1" o--> "-m_trapTypе" model.placableObject.TrapType: > is of the type
 model.placableObject.Ship "1" o--> "-m_shipTyрe" model.placableObject.ShipType: > is of the type
 model.placableObject.Ship "1" o--> "-m_direction" model.placableObject.Direction: > is in this direction
 model.placableObject.Weapon "1" o--> "-m_weaponType" model.placableObject.WeaponType: > is of the typе
-model.Player.Player .> model.grid.Grid : <<uses>>
+model.placableObject.Weapon ..> model.grid.Grid : <<uses>>
+model.placableObject.Blackhole ..> model.placableObject.Missile : <<uses>>
+model.placableObject.Blackhole ..> model.grid.Grid : <<uses>>
+model.placableObject.Tornado ..> model.grid.Grid : <<uses>>
+model.Player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
+model.Player.Player "*" *--> "-m_activeEffects" model.placableObject.TrapType : > is affected by
 @enduml
