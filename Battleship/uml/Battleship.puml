@@ -184,7 +184,6 @@ package model
         }
         class AI extends Player
         {
-            +<<Create>>Player()
             -m_tilesHit : Integer[*]
             +<<Create>>AI()
             +AttackRandom(opponentGrid : Grid,weapon : Weapon)
