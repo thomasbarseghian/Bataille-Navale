@@ -3,11 +3,16 @@ skinparam style strictuml
 skinparam classAttributelconSize 0
 skinparam classFontStyle bold
 hide enum methods
-package view {
+
+package view
+{
+
 } 
 
-package controller {
-} 
+package controller
+{
+
+}
 
 package model
 {
@@ -43,6 +48,14 @@ package model
             +<<Create>>Trap()
             +Activate()
         }
+
+        interface TrapFactory
+        {
+            +<<Create>>TrapFactory()
+            +createBlackhole()
+            +createTornado()
+        }
+
         class Blackhole extends Trap
         { 
             +<<Create>>Blackhole()
@@ -56,10 +69,19 @@ package model
         }
         class Ship <<abstract>> implements PlacableObject
         {
+            +<<Create>> Ship()
             -m_size : Integer
             -m_pv : Integer
             -m_direction : Integer
-            +<<Create>> Ship()
+        }
+        interface ShipFactory
+        {
+            +<<Create>>ShipFactory()
+            +createAirCarrier() : Ship
+            +createCruiser() : Ship
+            +createDestroyer() : Ship
+            +createSubmarine() : Ship
+            +createTorpedoBoat() : Ship
         }
         class AircraftCarrier extends Ship
         {
@@ -87,14 +109,22 @@ package model
             +<<Create>>Weapon()
             +Use(oppenentGrid : Grid, pos : Integer)
         }
+        interface WeaponFactory
+        {
+            +<<Create>>WeaponFactory()
+            +createMissile()
+            +createBomb()
+            +createSonar()
+            +createShovel()
+        }
         class Missile extends Weapon
         {
             +<<Create>>Missile()
             +Use(oppenentGrid : Grid, pos : Integer)
         }
-        class Bombe extends Weapon
+        class Bomb extends Weapon
         { 
-            +<<Create>>Bombe()
+            +<<Create>>Bomb()
             +Use(oppenentGrid : Grid, pos : Integer)
         }
         class Sonar extends Weapon
@@ -109,63 +139,67 @@ package model
         }
         enum ShipType
         {
-        AIRCRAFTCARRIER
-        CRUISER
-        DESTROYER
-        SUBMARINE
-        TORPEDOBOAT
+            AIRCRAFTCARRIER
+            CRUISER
+            DESTROYER
+            SUBMARINE
+            TORPEDOBOAT
         }
         enum Direction
         {
-        HORIZONTAL
-        VERTICAL
-	}
+            HORIZONTAL
+            VERTICAL
+        }
         enum TrapType
         {
-        BLACKHOLE
-        TORNADO
+            BLACKHOLE
+            TORNADO
         }
         enum WeaponType
         {
-        MISSILE
-        BOMBE
-        SONAR
-        SHOVEL
+            MISSILE
+            BOMB
+            SONAR
+            SHOVEL
         }
     }
     package Player
     {
-    class Player <<abstract>>
+        class Player <<abstract>>
+        {
+            +<<Create>>Player()
+            +PlaceBoatFix()
+            +PlaceBoatRandom()
+            +PlaceTrapFix()
+            +PlaceTrapRandom()
+            +PlaceWeaponRandom()
+        }
+        class Human extends Player
+        {
+            +<<Create>>Human()
+            +PlaceBoatCustom(pos : Integer, ship : Ship)
+            +PlaceTrapCustom(pos : Integer, trap : Trap)
+            +PlaceWeaponCustom(pos : Integer, weapon : Weapon)
+            +Attack(opponentGrid : Grid, pos : Integer, weapon : Weapon)
+        }
+        class AI extends Player
+        {
+            +<<Create>>Player()
+            -m_tilesHit : Integer[*]
+            +<<Create>>AI()
+            +AttackRandom(opponentGrid : Grid,weapon : Weapon)
+            +AttackWithTought(opponentGrid: Grid,weapon : Weapon)
+        }
+    }
+    package Game
     {
-    +<<Create>>Player()
-	+PlaceBoatFix()
-	+PlaceBoatRandom()
-	+PlaceTrapFix()
-	+PlaceTrapRandom()
-	+PlaceWeaponRandom()
-    }
-    class Human extends Player
-    {
-    +<<Create>>Human()
-	+PlaceBoatCustom(pos : Integer, ship : Ship)
-	+PlaceTrapCustom(pos : Integer, trap : Trap)
-	+PlaceWeaponCustom(pos : Integer, weapon : Weapon)
-    +Attack(opponentGrid : Grid, pos : Integer, weapon : Weapon)
-    }
-    class AI extends Player
-    {
-    -m_tilesHit : Integer[*]
-	+<<Create>>AI()
-	+AttackRandom(opponentGrid : Grid,weapon : Weapon)
-	+AttackWithTought(opponentGrid: Grid,weapon : Weapon)
-    }
-    }
-    package Game {
-        class Game {
+        class Game
+        {
             +<<Create>>Game()
             +startGame()
         }
-        enum GameState{
+        enum GameState
+        {
             CONFIGURATION,
             PLACEMENT,
             PLAYING,
@@ -173,19 +207,58 @@ package model
         }
     }
 }
-model.Game.Game "1" o--> "-m_gameState" model.Game.GameState: > is currently in
+
+'Game relations
+model.Game.Game "1" *--> "-m_gameState" model.Game.GameState: > is currently in
 model.Game.Game "2" o--> "-m_players" model.Player.Player: > is played by
+
+'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
+
+'Tile relations
 model.grid.Tile "1" *--> "-m_object" model.placableObject.PlacableObject: > has elements of the type
 model.grid.Tile *-> "1" model.grid.TileType : > is of the type\t
+
+'Trap relations
 model.placableObject.Trap "1" o--> "-m_trapTypе" model.placableObject.TrapType: > is of the type
+
+'Ship relations
 model.placableObject.Ship "1" o--> "-m_shipTyрe" model.placableObject.ShipType: > is of the type
 model.placableObject.Ship "1" o--> "-m_direction" model.placableObject.Direction: > is in this direction
+
+'Weapon relations
 model.placableObject.Weapon "1" o--> "-m_weaponType" model.placableObject.WeaponType: > is of the typе
 model.placableObject.Weapon ..> model.grid.Grid : <<uses>>
+
+'Blackhole relations
 model.placableObject.Blackhole ..> model.placableObject.Missile : <<uses>>
 model.placableObject.Blackhole ..> model.grid.Grid : <<uses>>
+
+'Tornado relations
 model.placableObject.Tornado ..> model.grid.Grid : <<uses>>
+
+'Player relations
 model.Player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
 model.Player.Player "*" *--> "-m_activeEffects" model.placableObject.TrapType : > is affected by
+
+'ShipFactory relations
+model.placableObject.ShipFactory ..> model.placableObject.Ship : <<uses>>
+model.placableObject.ShipFactory ..> model.placableObject.Submarine : <<uses>>
+model.placableObject.ShipFactory ..> model.placableObject.TorpedoBoat : <<uses>>
+model.placableObject.ShipFactory ..> model.placableObject.Cruiser : <<uses>>
+model.placableObject.ShipFactory ..> model.placableObject.Destroyer : <<uses>>
+model.placableObject.ShipFactory ..> model.placableObject.AircraftCarrier : <<uses>>
+
+'WeaponFactory relations
+model.placableObject.WeaponFactory .> model.placableObject.Weapon : <<uses>>
+model.placableObject.WeaponFactory .> model.placableObject.Bomb : <<uses>>
+model.placableObject.WeaponFactory .> model.placableObject.Sonar : <<uses>>
+model.placableObject.WeaponFactory .> model.placableObject.Shovel : <<uses>>
+model.placableObject.WeaponFactory .> model.placableObject.Missile : <<uses>>
+
+'TrapFactory relations
+model.placableObject.TrapFactory .> model.placableObject.Trap : <<uses>>
+model.placableObject.TrapFactory .> model.placableObject.Blackhole : <<uses>>
+model.placableObject.TrapFactory .> model.placableObject.Tornado : <<uses>>
+
 @enduml
