@@ -21,15 +21,14 @@ package model
         class Grid
         {
             -m_size : Integer
-            +<<Create>>Grid()
-            +createGrid(size : Integer)
-            +PlaceObject(object: PlacableObject, grid : Grid)
-        } 
+            +<<Create>>Grid(size : Integer)
+            +PlaceObject(object : PlacableObject, grid : Grid)
+        }
 
         class Tile
         {
             -isHit : Boolean
-            +<<Create>>Tile()
+            +<<Create>>Tile(type : TileType, object : PlacableObject)
         }
         enum TileType
         {
@@ -41,7 +40,7 @@ package model
     {
         interface PlacableObject <<interface>>
         { 
-
+            +<<Create>>PlacableObject()
         }
         class Trap <<abstract>> implements PlacableObject
         { 
@@ -62,17 +61,22 @@ package model
             +Activate(oppenentGrid : Grid, pos : Integer)
         }
         class Tornado extends Trap
-        { 
+        {
+            'An integer initialized to 0 will be created in the constructor, and each call to Scramble will increment this integer
+            'by 1 until it reaches 3 (or a multiple of 3 if multiple Tornado traps can be placed on the same grid)
             +<<Create>>Tornado()
             +Activate(player : Player)
             +Scramble(oppenentGrid : Grid)
         }
         class Ship <<abstract>> implements PlacableObject
         {
-            +<<Create>> Ship()
             -m_size : Integer
-            -m_pv : Integer
+            -m_hp : Integer
             -m_direction : Integer
+            +<<Create>> Ship(size : Integer, type : ShipType)
+            'm_hp = size we don't need the information twice
+            +setDirection(d : Direction)
+            'We will only know the direction when placing the boat not during the creation
         }
         interface ShipFactory
         {
@@ -106,7 +110,7 @@ package model
 
         class Weapon <<abstract>> implements PlacableObject
         {
-            +<<Create>>Weapon()
+            +<<Create>>Weapon(type : WeaponType)
             +Use(oppenentGrid : Grid, pos : Integer)
         }
         interface WeaponFactory
@@ -167,16 +171,18 @@ package model
     {
         class Player <<abstract>>
         {
-            +<<Create>>Player()
+            +<<Create>>Player(grid : Grid)
+            'The Player cannot create his grid because it doesn't really respect the MVC
             +PlaceBoatFix()
             +PlaceBoatRandom()
             +PlaceTrapFix()
             +PlaceTrapRandom()
             +PlaceWeaponRandom()
+            +PlayTurn()
         }
         class Human extends Player
         {
-            +<<Create>>Human()
+            +<<Create>>Human(grid : Grid)
             +PlaceBoatCustom(pos : Integer, ship : Ship)
             +PlaceTrapCustom(pos : Integer, trap : Trap)
             +PlaceWeaponCustom(pos : Integer, weapon : Weapon)
@@ -185,7 +191,7 @@ package model
         class AI extends Player
         {
             -m_tilesHit : Integer[*]
-            +<<Create>>AI()
+            +<<Create>>AI(grid : Grid)
             +AttackRandom(opponentGrid : Grid,weapon : Weapon)
             +AttackWithTought(opponentGrid: Grid,weapon : Weapon)
         }
@@ -194,8 +200,11 @@ package model
     {
         class Game
         {
-            +<<Create>>Game()
+            +<<Create>> Game()
             +startGame()
+            +nextTurn()
+            +checkWin()
+            +endGame()
         }
         enum GameState
         {
@@ -210,6 +219,7 @@ package model
 'Game relations
 model.Game.Game "1" *--> "-m_gameState" model.Game.GameState: > is currently in
 model.Game.Game "2" o--> "-m_players" model.Player.Player: > is played by
+model.Game.Game "1" o--> "-m_currentPlayer" model.Player.Player : > current turn
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
@@ -239,6 +249,9 @@ model.placableObject.Tornado ..> model.grid.Grid : <<uses>>
 'Player relations
 model.Player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
 model.Player.Player "*" *--> "-m_activeEffects" model.placableObject.TrapType : > is affected by
+model.Player.Player "*" *--> "-m_ships" model.placableObject.Ship : > owns
+model.Player.Player "*" *--> "-m_traps" model.placableObject.Trap : > owns
+model.Player.Player "*" *--> "-m_weapons" model.placableObject.Weapon : > owns
 
 'ShipFactory relations
 model.placableObject.ShipFactory ..> model.placableObject.Ship : <<uses>>
