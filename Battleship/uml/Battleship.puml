@@ -39,8 +39,8 @@ package model
     package placableObject
     {
         interface PlacableObject <<interface>>
-        { 
-            +<<Create>>PlacableObject()
+        {
+
         }
         class Trap <<abstract>> implements PlacableObject
         { 
@@ -50,9 +50,7 @@ package model
 
         interface TrapFactory
         {
-            +<<Create>>TrapFactory()
-            +createBlackhole()
-            +createTornado()
+            +createTrap(trapType : TrapType) : Trap
         }
 
         class Blackhole extends Trap
@@ -80,12 +78,7 @@ package model
         }
         interface ShipFactory
         {
-            +<<Create>>ShipFactory()
-            +createAirCarrier() : Ship
-            +createCruiser() : Ship
-            +createDestroyer() : Ship
-            +createSubmarine() : Ship
-            +createTorpedoBoat() : Ship
+            +createShip(shipType : ShipType) : Ship
         }
         class AircraftCarrier extends Ship
         {
@@ -115,11 +108,7 @@ package model
         }
         interface WeaponFactory
         {
-            +<<Create>>WeaponFactory()
-            +createMissile()
-            +createBomb()
-            +createSonar()
-            +createShovel()
+            +createWeapon(weaponType : WeaponType) : Weapon
         }
         class Missile extends Weapon
         {
@@ -167,18 +156,18 @@ package model
             SHOVEL
         }
     }
-    package Player
+    package player
     {
         class Player <<abstract>>
         {
             +<<Create>>Player(grid : Grid)
-            'The Player cannot create his grid because it doesn't really respect the MVC
             +PlaceBoatFix()
             +PlaceBoatRandom()
             +PlaceTrapFix()
             +PlaceTrapRandom()
             +PlaceWeaponRandom()
             +PlayTurn()
+            +setWeaponStrategy(weapon : Weapon);
         }
         class Human extends Player
         {
@@ -196,7 +185,7 @@ package model
             +AttackWithTought(opponentGrid: Grid,weapon : Weapon)
         }
     }
-    package Game
+    package game
     {
         class Game
         {
@@ -204,7 +193,6 @@ package model
             +startGame()
             +nextTurn()
             +checkWin()
-            +endGame()
         }
         enum GameState
         {
@@ -217,9 +205,9 @@ package model
 }
 
 'Game relations
-model.Game.Game "1" *--> "-m_gameState" model.Game.GameState: > is currently in
-model.Game.Game "2" o--> "-m_players" model.Player.Player: > is played by
-model.Game.Game "1" o--> "-m_currentPlayer" model.Player.Player : > current turn
+model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
+model.game.Game "2" o--> "-m_players" model.player.Player: > is played by
+model.game.Game "1" o--> "-m_currentPlayer" model.player.Player : > current turn
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
@@ -247,30 +235,31 @@ model.placableObject.Blackhole ..> model.grid.Grid : <<uses>>
 model.placableObject.Tornado ..> model.grid.Grid : <<uses>>
 
 'Player relations
-model.Player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
-model.Player.Player "*" *--> "-m_activeEffects" model.placableObject.TrapType : > is affected by
-model.Player.Player "*" *--> "-m_ships" model.placableObject.Ship : > owns
-model.Player.Player "*" *--> "-m_traps" model.placableObject.Trap : > owns
-model.Player.Player "*" *--> "-m_weapons" model.placableObject.Weapon : > owns
+model.player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
+model.player.Player "*" *--> "-m_activeEffects" model.placableObject.TrapType : > is affected by
+model.player.Player "*" *--> "-m_aliveShips" model.placableObject.Ship : > owns
+model.player.Player "*" *--> "-m_traps" model.placableObject.Trap : > owns
+model.player.Player "*" *--> "-m_weapons" model.placableObject.Weapon : > owns
+model.player.Player "1" o--> "-m_weaponStrategy" model.placableObject.Weapon : > uses the strategy
 
 'ShipFactory relations
 model.placableObject.ShipFactory ..> model.placableObject.Ship : <<uses>>
-model.placableObject.ShipFactory ..> model.placableObject.Submarine : <<uses>>
-model.placableObject.ShipFactory ..> model.placableObject.TorpedoBoat : <<uses>>
-model.placableObject.ShipFactory ..> model.placableObject.Cruiser : <<uses>>
-model.placableObject.ShipFactory ..> model.placableObject.Destroyer : <<uses>>
-model.placableObject.ShipFactory ..> model.placableObject.AircraftCarrier : <<uses>>
+model.placableObject.ShipFactory ..> model.placableObject.Submarine : <<instantiate>>
+model.placableObject.ShipFactory ..> model.placableObject.TorpedoBoat : <<instantiate>>
+model.placableObject.ShipFactory ..> model.placableObject.Cruiser : <<instantiate>>
+model.placableObject.ShipFactory ..> model.placableObject.Destroyer : <<instantiate>>
+model.placableObject.ShipFactory ..> model.placableObject.AircraftCarrier : <<instantiate>>
 
 'WeaponFactory relations
 model.placableObject.WeaponFactory .> model.placableObject.Weapon : <<uses>>
-model.placableObject.WeaponFactory .> model.placableObject.Bomb : <<uses>>
-model.placableObject.WeaponFactory .> model.placableObject.Sonar : <<uses>>
-model.placableObject.WeaponFactory .> model.placableObject.Shovel : <<uses>>
-model.placableObject.WeaponFactory .> model.placableObject.Missile : <<uses>>
+model.placableObject.WeaponFactory .> model.placableObject.Bomb : <<instantiate>>
+model.placableObject.WeaponFactory .> model.placableObject.Sonar : <<instantiate>>
+model.placableObject.WeaponFactory .> model.placableObject.Shovel : <<instantiate>>
+model.placableObject.WeaponFactory .> model.placableObject.Missile : <<instantiate>>
 
 'TrapFactory relations
 model.placableObject.TrapFactory .> model.placableObject.Trap : <<uses>>
-model.placableObject.TrapFactory .> model.placableObject.Blackhole : <<uses>>
-model.placableObject.TrapFactory .> model.placableObject.Tornado : <<uses>>
+model.placableObject.TrapFactory .> model.placableObject.Blackhole : <<instantiate>>
+model.placableObject.TrapFactory .> model.placableObject.Tornado : <<instantiate>>
 
 @enduml
