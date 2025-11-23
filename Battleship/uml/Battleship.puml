@@ -202,9 +202,22 @@ package model
             END
         }
     }
+    package effects
+    {
+        interface Effects <<interface>>
+        {
+            +onBeforeAttack(player : Player)
+            +isExpired() : Boolean
+        }
+        class TornadoEffect implements Effects
+        {
+            -remainingScrambles : Integer
+            +<<Create>>TornadoEffects()
+        }
+    }
 }
 
-'Game relations
+'game relations
 model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
 model.game.Game "2" o--> "-m_players" model.player.Player: > is played by
 model.game.Game "1" o--> "-m_currentPlayer" model.player.Player : > current turn
@@ -234,10 +247,10 @@ model.placableObject.Blackhole ..> model.grid.Grid : <<uses>>
 'Tornado relations
 model.placableObject.Tornado ..> model.grid.Grid : <<uses>>
 
-'Player relations
+'player relations
 model.player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
-model.player.Player "*" *--> "-m_activeEffects" model.placableObject.TrapType : > is affected by
-model.player.Player "*" *--> "-m_aliveShips" model.placableObject.Ship : > owns
+model.player.Player "*" *--> "-m_activeEffects" model.effects.Effects : > is affected by
+model.player.Player "*" *--> "-m_ships" model.placableObject.Ship : > owns
 model.player.Player "*" *--> "-m_traps" model.placableObject.Trap : > owns
 model.player.Player "*" *--> "-m_weapons" model.placableObject.Weapon : > owns
 model.player.Player "1" o--> "-m_weaponStrategy" model.placableObject.Weapon : > uses the strategy
