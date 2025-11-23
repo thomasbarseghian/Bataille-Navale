@@ -7,7 +7,22 @@ skinparam linetype ortho
 
 package view
 {
-
+    class TerminalHistory
+    {
+        +<<create>>TerminalHistory
+    }
+    class ConfigurationScreen
+    {
+    }
+    class PlacementScreen
+    {
+    }
+    class MainScreen
+    {
+    }
+    class EndScreen
+    {
+    }
 } 
 
 package controller
@@ -188,6 +203,8 @@ package model
             +PlaceWeaponRandom()
             +PlayTurn()
             +setWeaponStrategy(weapon : Weapon)
+            +AddWeapon(weapon : Weapon)
+            +addTrap(trap : Trap)
         }
         class Human extends Player
         {
