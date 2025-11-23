@@ -3,40 +3,55 @@ skinparam style strictuml
 skinparam classAttributelconSize 0
 skinparam classFontStyle bold
 hide enum methods
-'skinparam linetype ortho
+skinparam linetype ortho
 
 package view
 {
     class TerminalHistory
-    {
-        +<<create>>TerminalHistory
-    }
-    class ConfigurationScreen implements .model.game.GameObserver
-    {
-        +updateNumberOfShips(numberOfShips: Integer)
-    }
-    class PlacementScreen implements .model.game.GameObserver
-    {
-        +updateNumberOfShips(numberOfShips: Integer)
-    }
-    class MainScreen implements .model.game.GameObserver
-    {
-        +updateNumberOfShips(numberOfShips: Integer)
-        +updateTurnNumber(turnNumber: Integer)
-        +updateHit(hit: Integer)
-        +updateMiss(miss: Integer)
-        +updateIslandTileSearched(islandTileSearched: Integer)
-        +updateTileHit(pos: Integer, ishit :Boolean)
-    }
-    class EndScreen implements model.game.GameObserver
-    {
-        +updateNumberOfShips(numberOfShips: Integer)
-        +updateTurnNumber(turnNumber: Integer)
-        +updateHit(hit: Integer)
-        +updateMiss(miss: Integer)
-        +updateIslandTileSearched(islandTileSearched: Integer)
-        +updateTileHit(pos: Integer, ishit :Boolean)
-    }
+        {
+            +<<create>>TerminalHistory()
+            +updateAttack(pos : Integer, weapon : Weapon)
+        }
+
+        class ConfigurationScreen
+        {
+            +<<create>>ConfigurationScreen()
+            +updateNumberOfShips(numberOfShips: Integer)
+        }
+
+        class PlacementScreen
+        {
+            +<<create>>PlacementScreen()
+            +updateShipPlaced(ship : Ship)
+            +updateTrapPlaced(trap : Trap)
+            +updateWeaponPlaced(weapon : Weapon)
+            +updateNumberOfShips(numberOfShips: Integer)
+        }
+
+        class MainScreen
+        {
+            +<<create>>MainScreen()
+            +updateTrapPlaced(trap : Trap)
+            +updateAttack(pos : Integer, weapon : Weapon)
+            +updateEffectApplied(effect : Effects)
+            +updateNumberOfShips(numberOfShips: Integer)
+            +updateTurnNumber(turnNumber: Integer)
+            +updateHit(hit: Integer)
+            +updateMiss(miss: Integer)
+            +updateIslandTileSearched(islandTileSearched: Integer)
+            +updateTileHit(pos: Integer, ishit :Boolean)
+        }
+
+        class EndScreen
+        {
+            +<<create>>EndScreen()
+            +updateNumberOfShips(numberOfShips: Integer)
+            +updateTurnNumber(turnNumber: Integer)
+            +updateHit(hit: Integer)
+            +updateMiss(miss: Integer)
+            +updateIslandTileSearched(islandTileSearched: Integer)
+            +updateTileHit(pos: Integer, ishit :Boolean)
+        }
 } 
 
 package controller
@@ -69,7 +84,7 @@ package model
             -m_miss : Integer
             -m_hit : Integer
             -m_islandTileSearched : Integer
-            +<<Create>>Grid(size : Integer)
+            +<<create>>Grid(size : Integer)
             +PlaceObject(object : PlacableObject, pos : Integer)
             +getMiss() : Integer
             +getHit() : Integer
@@ -96,7 +111,7 @@ package model
         class Tile
         {
             -isHit : Boolean
-            +<<Create>>Tile(type : TileType, object : PlacableObject)
+            +<<create>>Tile(type : TileType, object : PlacableObject)
             +getObject() : PlacableObject
             +getTileType() : TileType
             +setObject(object : PlacableObject)
@@ -115,7 +130,7 @@ package model
         }
         class Trap <<abstract>> implements PlacableObject
         { 
-            +<<Create>>Trap()
+            +<<create>>Trap()
             +Activate()
         }
 
@@ -126,14 +141,14 @@ package model
 
         class Blackhole extends Trap
         { 
-            +<<Create>>Blackhole()
+            +<<create>>Blackhole()
             +Activate(opponentGrid : Grid, pos : Integer)
         }
         class Tornado extends Trap
         {
             'An integer initialized to 0 will be created in the constructor, and each call to Scramble will increment this integer
             'by 1 until it reaches 3 (or a multiple of 3 if multiple Tornado traps can be placed on the same grid)
-            +<<Create>>Tornado()
+            +<<create>>Tornado()
             +Activate(player : Player)
             +Scramble(opponentGrid : Grid)
         }
@@ -142,7 +157,7 @@ package model
             -m_size : Integer
             -m_hp : Integer
             -m_shipTiles : Integer
-            +<<Create>> Ship(size : Integer, type : ShipType)
+            +<<create>> Ship(size : Integer, type : ShipType)
             'm_hp = size we don't need the information twice
             +isDestroyed() : Boolean
             +getHp() : Integer
@@ -159,28 +174,28 @@ package model
         }
         class AircraftCarrier extends Ship
         {
-            +<<Create>> AircraftCarrier()
+            +<<create>> AircraftCarrier()
         }
         class Cruiser extends Ship
         {
-            +<<Create>> Cruiser()
+            +<<create>> Cruiser()
         }
         class Destroyer extends Ship
         {
-            +<<Create>> Destroyer()
+            +<<create>> Destroyer()
         }
         class Submarine extends Ship
         {
-            +<<Create>> Submarine()
+            +<<create>> Submarine()
         }
         class TorpedoBoat extends Ship
         {
-            +<<Create>> TorpedoBoat()
+            +<<create>> TorpedoBoat()
         }
 
         class Weapon <<abstract>> implements PlacableObject
         {
-            +<<Create>>Weapon(type : WeaponType)
+            +<<create>>Weapon(type : WeaponType)
             +Use(opponentGrid : Grid, pos : Integer)
         }
         interface WeaponFactory
@@ -189,22 +204,22 @@ package model
         }
         class Missile extends Weapon
         {
-            +<<Create>>Missile()
+            +<<create>>Missile()
             +Use(opponentGrid : Grid, pos : Integer)
         }
         class Bomb extends Weapon
         { 
-            +<<Create>>Bomb()
+            +<<create>>Bomb()
             +Use(opponentGrid : Grid, pos : Integer)
         }
         class Sonar extends Weapon
         { 
-            +<<Create>>Sonar()
+            +<<create>>Sonar()
             +Use(opponentGrid : Grid, pos : Integer)
         }
         class Shovel extends Weapon
         {
-            +<<Create>>Shovel()
+            +<<create>>Shovel()
             +Use(opponentGrid : Grid, pos : Integer)
         }
         enum ShipType
@@ -237,7 +252,7 @@ package model
     {
         class Player <<abstract>>
         {
-            +<<Create>>Player(grid : Grid)
+            +<<create>>Player(grid : Grid)
             +PlaceBoatFix()
             +PlaceBoatRandom()
             +PlaceTrapFix()
@@ -247,10 +262,16 @@ package model
             +setWeaponStrategy(weapon : Weapon)
             +AddWeapon(weapon : Weapon)
             +addTrap(trap : Trap)
+            +addObserver(observer : PlayerObserver)
+            +removeObserver(observer : PlayerObserver)
+            +notifyShipPlaced(ship : Ship)
+            +notifyTrapPlaced(trap : Trap)
+            +notifyAttack(pos : Integer, weapon : Weapon)
+            +notifyEffectApplied(effect : Effects)
         }
         class Human extends Player
         {
-            +<<Create>>Human(grid : Grid)
+            +<<create>>Human(grid : Grid)
             +PlaceBoatCustom(pos : Integer, ship : Ship)
             +PlaceTrapCustom(pos : Integer, trap : Trap)
             +PlaceWeaponCustom(pos : Integer, weapon : Weapon)
@@ -259,9 +280,18 @@ package model
         class AI extends Player
         {
             -m_tilesHit : Integer[*]
-            +<<Create>>AI(grid : Grid)
+            +<<create>>AI(grid : Grid)
             +AttackRandom(opponentGrid : Grid,weapon : Weapon)
             +AttackWithTought(opponentGrid: Grid,weapon : Weapon)
+        }
+
+        interface PlayerObserver
+        {
+            void updateShips(ships : Ship[*]);
+            void updateTraps(traps : Trap[*]);
+            void updateWeapons(weapons : Weapon[*]);
+            +updateAttack(pos : Integer, weapon : Weapon)
+            +updateEffectApplied(effect : Effects)
         }
     }
     package game
@@ -270,7 +300,7 @@ package model
         {
             -m_numberOfShips : Integer
             -m_turnNumber : Integer
-            +<<Create>> Game()
+            +<<create>> Game()
             +startGame()
             +nextTurn()
             +checkWin() : Boolean
@@ -307,17 +337,17 @@ package model
         class TornadoEffect implements Effects
         {
             -remainingScrambles : Integer
-            +<<Create>>TornadoEffect()
+            +<<create>>TornadoEffect()
             +getRemainingScrambles() : Integer
         }
     }
 }
 
-'game relations
+'Game relations
 model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
 model.game.Game "2" o--> "-m_players" model.player.Player: > is played bys
 model.game.Game "1" o--> "-m_currentPlayer" model.player.Player : > current turn
-model.game.Game "*" o--> "-m_gameObservers" model.game.GameObserver : > notify
+model.game.Game "*" o--> "-m_gameObservers" model.game.GameObserver : > notifies
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
@@ -345,13 +375,17 @@ model.placableObject.Blackhole ..> model.grid.Grid : <<uses>>
 'Tornado relations
 model.placableObject.Tornado ..> model.grid.Grid : <<uses>>
 
-'player relations
+'Player relations
 model.player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
 model.player.Player "*" *--> "-m_activeEffects" model.effects.Effects : > is affected by
 model.player.Player "*" *--> "-m_ships" model.placableObject.Ship : > owns
 model.player.Player "*" *--> "-m_traps" model.placableObject.Trap : > owns
 model.player.Player "*" *--> "-m_weapons" model.placableObject.Weapon : > owns
 model.player.Player "1" o--> "-m_weaponStrategy" model.placableObject.Weapon : > uses the strategy
+model.player.Player "*" *--> "-m_ships" model.placableObject.Ship : > owns
+model.player.Player "*" *--> "-m_traps" model.placableObject.Trap : > owns
+model.player.Player "*" *--> "-m_weapons" model.placableObject.Weapon : > owns
+model.player.Player "1" o--> "1..*" model.player.PlayerObserver : > notifies changes
 
 'ShipFactory relations
 model.placableObject.ShipFactory ..> model.placableObject.Ship : <<uses>>
@@ -383,5 +417,11 @@ EndScreen ..|> model.game.GameObserver
 EndScreen ..|> model.grid.GridObserver
 MainScreen ..|> model.grid.GridObserver
 
+' View relations
+
+view.TerminalHistory .up.|> .model.player.PlayerObserver
+view.PlacementScreen .up.|> .model.player.PlayerObserver
+view.MainScreen .up.|> .model.player.PlayerObserver
+view.EndScreen .up.|> .model.player.PlayerObserver
 
 @enduml
