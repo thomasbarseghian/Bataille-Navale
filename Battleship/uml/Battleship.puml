@@ -3,7 +3,7 @@ skinparam style strictuml
 skinparam classAttributelconSize 0
 skinparam classFontStyle bold
 hide enum methods
-skinparam linetype ortho
+'skinparam linetype ortho
 
 package view
 {
@@ -27,7 +27,22 @@ package view
 
 package controller
 {
+    class ScreenController
+    {
 
+    }
+    class GameController
+    {
+
+    }
+    class PlacementController
+    {
+
+    }
+    class ConfigController
+    {
+
+    }
 }
 
 package model
@@ -41,7 +56,7 @@ package model
             -m_hit : Integer
             -m_islandTileSearched : Integer
             +<<Create>>Grid(size : Integer)
-            +PlaceObject(object : PlacableObject, tile : Tile)
+            +PlaceObject(object : PlacableObject, pos : Integer)
             +getMiss() : Integer
             +getHit() : Integer
             +getIslandTileSearched() : Integer
@@ -84,7 +99,7 @@ package model
         class Blackhole extends Trap
         { 
             +<<Create>>Blackhole()
-            +Activate(oppenentGrid : Grid, pos : Integer)
+            +Activate(opponentGrid : Grid, pos : Integer)
         }
         class Tornado extends Trap
         {
@@ -92,13 +107,12 @@ package model
             'by 1 until it reaches 3 (or a multiple of 3 if multiple Tornado traps can be placed on the same grid)
             +<<Create>>Tornado()
             +Activate(player : Player)
-            +Scramble(oppenentGrid : Grid)
+            +Scramble(opponentGrid : Grid)
         }
         class Ship <<abstract>> implements PlacableObject
         {
             -m_size : Integer
             -m_hp : Integer
-            -m_direction : Integer
             -m_shipTiles : Integer
             +<<Create>> Ship(size : Integer, type : ShipType)
             'm_hp = size we don't need the information twice
@@ -129,7 +143,7 @@ package model
         }
         class Submarine extends Ship
         {
-            +<<Create>> AircraftCarrier()
+            +<<Create>> Submarine()
         }
         class TorpedoBoat extends Ship
         {
@@ -139,7 +153,7 @@ package model
         class Weapon <<abstract>> implements PlacableObject
         {
             +<<Create>>Weapon(type : WeaponType)
-            +Use(oppenentGrid : Grid, pos : Integer)
+            +Use(opponentGrid : Grid, pos : Integer)
         }
         interface WeaponFactory
         {
@@ -148,22 +162,22 @@ package model
         class Missile extends Weapon
         {
             +<<Create>>Missile()
-            +Use(oppenentGrid : Grid, pos : Integer)
+            +Use(opponentGrid : Grid, pos : Integer)
         }
         class Bomb extends Weapon
         { 
             +<<Create>>Bomb()
-            +Use(oppenentGrid : Grid, pos : Integer)
+            +Use(opponentGrid : Grid, pos : Integer)
         }
         class Sonar extends Weapon
         { 
             +<<Create>>Sonar()
-            +Use(oppenentGrid : Grid, pos : Integer)
+            +Use(opponentGrid : Grid, pos : Integer)
         }
         class Shovel extends Weapon
         {
-            +<<Create>>Sonar()
-            +Use(oppenentGrid : Grid, pos : Integer)
+            +<<Create>>Shovel()
+            +Use(opponentGrid : Grid, pos : Integer)
         }
         enum ShipType
         {
@@ -226,8 +240,8 @@ package model
     {
         class Game
         {
-            +m_numberOfShips : Integer
-            +m_turnNumber : Integer
+            -m_numberOfShips : Integer
+            -m_turnNumber : Integer
             +<<Create>> Game()
             +startGame()
             +nextTurn()
@@ -243,6 +257,13 @@ package model
             PLAYING,
             END
         }
+        interface GameObserver
+        {
+            +updateGameState(gamestate: GameState)
+            +updateNumberOfShips(numberOfShips: Integer)
+            +update(numberOfShips: Integer)
+            +updateNumberOfShips(numberOfShips: Integer)
+        }
     }
     package effects
     {
@@ -254,7 +275,7 @@ package model
         class TornadoEffect implements Effects
         {
             -remainingScrambles : Integer
-            +<<Create>>TornadoEffects()
+            +<<Create>>TornadoEffect()
             +getRemainingScrambles() : Integer
         }
     }
@@ -264,6 +285,7 @@ package model
 model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
 model.game.Game "2" o--> "-m_players" model.player.Player: > is played by
 model.game.Game "1" o--> "-m_currentPlayer" model.player.Player : > current turn
+model.game.Game "*" o--> "-m_observers" model.game.GameObserver : > current turn
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
