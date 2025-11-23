@@ -11,25 +11,39 @@ package view
     {
         +<<create>>TerminalHistory
     }
-    class ConfigurationScreen
+    class ConfigurationScreen implements .model.game.GameObserver
     {
+        +updateNumberOfShips(numberOfShips: Integer)
     }
-    class PlacementScreen
+    class PlacementScreen implements .model.game.GameObserver
     {
+        +updateNumberOfShips(numberOfShips: Integer)
     }
-    class MainScreen
+    class MainScreen implements .model.game.GameObserver
     {
+        +updateNumberOfShips(numberOfShips: Integer)
+        +updateTurnNumber(turnNumber: Integer)
+        +updateHit(hit: Integer)
+        +updateMiss(miss: Integer)
+        +updateIslandTileSearched(islandTileSearched: Integer)
+        +updateTileHit(pos: Integer, ishit :Boolean)
     }
-    class EndScreen
+    class EndScreen implements model.game.GameObserver
     {
+        +updateNumberOfShips(numberOfShips: Integer)
+        +updateTurnNumber(turnNumber: Integer)
+        +updateHit(hit: Integer)
+        +updateMiss(miss: Integer)
+        +updateIslandTileSearched(islandTileSearched: Integer)
+        +updateTileHit(pos: Integer, ishit :Boolean)
     }
 } 
 
 package controller
 {
-    class ScreenController
+    class ScreenController implements .model.game.GameObserver
     {
-
+        +updateGameState(gamestate: GameState)
     }
     class GameController
     {
@@ -63,6 +77,20 @@ package model
             +Miss()
             +Hit()
             +Search()
+            +addObserver(obs : GridObserver)
+            +removeObserver(obs : GridObserver)
+            +notifyHit(hit: Integer)
+            +notifyMiss(miss: Integer)
+            +notifyIslandTileSearched(islandTileSearched: Integer)
+            +notifyTileHit(pos: Integer, ishit :Boolean)
+        }
+
+        interface GridObserver <<interface>>
+        {
+            +updateHit(hit: Integer)
+            +updateMiss(miss: Integer)
+            +updateIslandTileSearched(islandTileSearched: Integer)
+            +updateTileHit(pos: Integer, ishit :Boolean)
         }
 
         class Tile
@@ -249,6 +277,11 @@ package model
             +getGameState() : GameState
             +getTurnNumber() : Integer
             +getNumberOfShips() : Integer
+            +addObserver(obs : GameObserver)
+            +removeObserver(obs : GameObserver)
+            +notifyGameState(gamestate: GameState)
+            +notifyNumberOfShips(numberOfShips: Integer)
+            +notifyTurnNumber(turnNumber: Integer)
         }
         enum GameState
         {
@@ -257,12 +290,11 @@ package model
             PLAYING,
             END
         }
-        interface GameObserver
+        interface GameObserver <<interface>>
         {
             +updateGameState(gamestate: GameState)
             +updateNumberOfShips(numberOfShips: Integer)
-            +update(numberOfShips: Integer)
-            +updateNumberOfShips(numberOfShips: Integer)
+            +updateTurnNumber(turnNumber: Integer)
         }
     }
     package effects
@@ -283,12 +315,13 @@ package model
 
 'game relations
 model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
-model.game.Game "2" o--> "-m_players" model.player.Player: > is played by
+model.game.Game "2" o--> "-m_players" model.player.Player: > is played bys
 model.game.Game "1" o--> "-m_currentPlayer" model.player.Player : > current turn
-model.game.Game "*" o--> "-m_observers" model.game.GameObserver : > current turn
+model.game.Game "*" o--> "-m_gameObservers" model.game.GameObserver : > notify
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
+model.grid.Grid "*" o--> "-m_gridObservers" model.grid.GridObserver : > notify
 
 'Tile relations
 model.grid.Tile "1" *--> "-m_object" model.placableObject.PlacableObject: > has elements of the type
@@ -339,5 +372,16 @@ model.placableObject.WeaponFactory .> model.placableObject.Missile : <<instantia
 model.placableObject.TrapFactory .> model.placableObject.Trap : <<uses>>
 model.placableObject.TrapFactory .> model.placableObject.Blackhole : <<instantiate>>
 model.placableObject.TrapFactory .> model.placableObject.Tornado : <<instantiate>>
+
+' Relations (implémentation)
+ConfigurationScreen ..|> model.game.GameObserver
+PlacementScreen ..|> model.game.GameObserver
+MainScreen ..|> model.game.GameObserver
+EndScreen ..|> model.game.GameObserver
+
+' EndScreen observe aussi la grille
+EndScreen ..|> model.grid.GridObserver
+MainScreen ..|> model.grid.GridObserver
+
 
 @enduml
