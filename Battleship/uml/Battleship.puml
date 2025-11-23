@@ -39,8 +39,7 @@ package model
     package placableObject
     {
         interface PlacableObject <<interface>>
-        { 
-            +<<Create>>PlacableObject()
+        {
         }
         class Trap <<abstract>> implements PlacableObject
         { 
@@ -167,12 +166,11 @@ package model
             SHOVEL
         }
     }
-    package Player
+    package player
     {
         class Player <<abstract>>
         {
             +<<Create>>Player(grid : Grid)
-            'The Player cannot create his grid because it doesn't really respect the MVC
             +PlaceBoatFix()
             +PlaceBoatRandom()
             +PlaceTrapFix()
@@ -196,7 +194,7 @@ package model
             +AttackWithTought(opponentGrid: Grid,weapon : Weapon)
         }
     }
-    package Game
+    package game
     {
         class Game
         {
@@ -204,7 +202,6 @@ package model
             +startGame()
             +nextTurn()
             +checkWin()
-            +endGame()
         }
         enum GameState
         {
@@ -214,12 +211,25 @@ package model
             END
         }
     }
+    package effects
+    {
+        interface Effects <<interface>>
+        {
+            +onBeforeAttack(player : Player)
+            +isExpired() : Boolean
+        }
+        class TornadoEffect implements Effects
+        {
+            -remainingScrambles : Integer
+            +<<Create>>TornadoEffects()
+        }
+    }
 }
 
-'Game relations
-model.Game.Game "1" *--> "-m_gameState" model.Game.GameState: > is currently in
-model.Game.Game "2" o--> "-m_players" model.Player.Player: > is played by
-model.Game.Game "1" o--> "-m_currentPlayer" model.Player.Player : > current turn
+'game relations
+model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
+model.game.Game "2" o--> "-m_players" model.player.Player: > is played by
+model.game.Game "1" o--> "-m_currentPlayer" model.player.Player : > current turn
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
@@ -246,12 +256,12 @@ model.placableObject.Blackhole ..> model.grid.Grid : <<uses>>
 'Tornado relations
 model.placableObject.Tornado ..> model.grid.Grid : <<uses>>
 
-'Player relations
-model.Player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
-model.Player.Player "*" *--> "-m_activeEffects" model.placableObject.TrapType : > is affected by
-model.Player.Player "*" *--> "-m_ships" model.placableObject.Ship : > owns
-model.Player.Player "*" *--> "-m_traps" model.placableObject.Trap : > owns
-model.Player.Player "*" *--> "-m_weapons" model.placableObject.Weapon : > owns
+'player relations
+model.player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
+model.player.Player "*" *--> "-m_activeEffects" model.effects.Effects : > is affected by
+model.player.Player "*" *--> "-m_ships" model.placableObject.Ship : > owns
+model.player.Player "*" *--> "-m_traps" model.placableObject.Trap : > owns
+model.player.Player "*" *--> "-m_weapons" model.placableObject.Weapon : > owns
 
 'ShipFactory relations
 model.placableObject.ShipFactory ..> model.placableObject.Ship : <<uses>>
