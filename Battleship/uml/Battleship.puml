@@ -98,7 +98,6 @@ package model
         {
             -m_size : Integer
             -m_hp : Integer
-            -m_direction : Integer
             -m_shipTiles : Integer
             +<<Create>> Ship(size : Integer, type : ShipType)
             'm_hp = size we don't need the information twice
