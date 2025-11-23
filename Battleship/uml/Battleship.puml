@@ -3,6 +3,7 @@ skinparam style strictuml
 skinparam classAttributelconSize 0
 skinparam classFontStyle bold
 hide enum methods
+skinparam linetype ortho
 
 package view
 {
@@ -21,14 +22,26 @@ package model
         class Grid
         {
             -m_size : Integer
+            -m_miss : Integer
+            -m_hit : Integer
+            -m_islandTileSearched : Integer
             +<<Create>>Grid(size : Integer)
-            +PlaceObject(object : PlacableObject, grid : Grid)
+            +PlaceObject(object : PlacableObject, tile : Tile)
+            +getMiss() : Integer
+            +getHit() : Integer
+            +getIslandTileSearched() : Integer
+            +Miss()
+            +Hit()
+            +Search()
         }
 
         class Tile
         {
             -isHit : Boolean
             +<<Create>>Tile(type : TileType, object : PlacableObject)
+            +getObject() : PlacableObject
+            +getTileType() : TileType
+            +setObject(object : PlacableObject)
         }
         enum TileType
         {
@@ -71,9 +84,16 @@ package model
             -m_size : Integer
             -m_hp : Integer
             -m_direction : Integer
+            -m_shipTiles : Integer
             +<<Create>> Ship(size : Integer, type : ShipType)
             'm_hp = size we don't need the information twice
+            +isDestroyed() : Boolean
+            +getHp() : Integer
+            +getSize() : Integer
+            +getDirection() : Direction
+            +getShipTiles() : Integer
             +setDirection(d : Direction)
+            +hit()
             'We will only know the direction when placing the boat not during the creation
         }
         interface ShipFactory
@@ -99,7 +119,7 @@ package model
         class TorpedoBoat extends Ship
         {
             +<<Create>> TorpedoBoat()
-        } 
+        }
 
         class Weapon <<abstract>> implements PlacableObject
         {
@@ -167,7 +187,7 @@ package model
             +PlaceTrapRandom()
             +PlaceWeaponRandom()
             +PlayTurn()
-            +setWeaponStrategy(weapon : Weapon);
+            +setWeaponStrategy(weapon : Weapon)
         }
         class Human extends Player
         {
@@ -189,10 +209,15 @@ package model
     {
         class Game
         {
+            +m_numberOfShips : Integer
+            +m_turnNumber : Integer
             +<<Create>> Game()
             +startGame()
             +nextTurn()
-            +checkWin()
+            +checkWin() : Boolean
+            +getGameState() : GameState
+            +getTurnNumber() : Integer
+            +getNumberOfShips() : Integer
         }
         enum GameState
         {
@@ -213,6 +238,7 @@ package model
         {
             -remainingScrambles : Integer
             +<<Create>>TornadoEffects()
+            +getRemainingScrambles() : Integer
         }
     }
 }
