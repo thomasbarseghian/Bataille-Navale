@@ -1,4 +1,4 @@
-package model.placableObject;
+package model.placableObject.Trap;
 
 public interface PlaceableObject {
 }
