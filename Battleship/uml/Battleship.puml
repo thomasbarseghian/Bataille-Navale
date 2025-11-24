@@ -52,7 +52,7 @@ package view
             +updateIslandTileSearched(islandTileSearched: Integer)
             +updateTileHit(pos: Integer, ishit :Boolean)
         }
-} 
+}
 
 package controller
 {
