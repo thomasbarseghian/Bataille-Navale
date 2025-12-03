@@ -145,7 +145,7 @@ package model
                     class Blackhole extends Trap
                     {
                         +<<create>>Blackhole()
-                        +activate(opponentGrid : Grid)
+                        +activate(player : Player,pos : Integer)
                     }
                     class Tornado extends Trap
                     {
@@ -153,7 +153,7 @@ package model
                         'by 1 until it reaches 3 (or a multiple of 3 if multiple Tornado traps can be placed on the same grid)
                         -remainingScrambles : Integer
                         +<<create>>Tornado()
-                        +activate(opponentGrid : Grid)
+                        +activate(player : Player)
                         +scramble(opponentGrid : Grid)
                         +getRemainingScrambles() : Integer
                         +isExpired() : Boolean
