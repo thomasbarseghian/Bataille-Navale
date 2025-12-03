@@ -264,8 +264,8 @@ package model
         {
             -m_name : String
             -m_isTornadoed : Boolean
-            +<<create>>Player(grid : Grid)
-            placeObject(object : PlacableObject)
+            +<<create>>Player(name : String, grid : Grid)
+            +placeObject(object : PlacableObject)
             +placeBoatFix()
             +placeBoatRandom()
             +placeTrapFix()
@@ -273,9 +273,6 @@ package model
             +placeWeaponFix()
             +placeWeaponRandom()
             +playTurn()
-            -m_name : String
-            +<<create>>Player(grids : Grid)
-            +placeObject()
             +setWeaponStrategy(weapon : Weapon)
             +addWeapon(weapon : Weapon)
             +addTrap(trap : Trap)
@@ -409,14 +406,11 @@ model.placableObject.trap.Tornado ..> model.grid.Grid : <<uses>>
 model.placableObject.trap.Tornado ..> model.player.Player : <<uses>>
 
 'Player relations
-model.player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
+model.player.Player "1" *--> "-m_grid" model.grid.Grid : > places on
 model.player.Player "*" *--> "-m_ships" model.placableObject.ship.Ship : > owns
 model.player.Player "*" *--> "-m_traps" model.placableObject.trap.Trap : > owns
 model.player.Player "*" *--> "-m_weapons" model.placableObject.weapon.Weapon : > owns
 model.player.Player "1" o--> "-m_weaponStrategy" model.placableObject.weapon.Weapon : > uses the strategy
-model.player.Player "*" *--> "-m_ships" model.placableObject.ship.Ship : > owns
-model.player.Player "*" *--> "-m_traps" model.placableObject.trap.Trap : > owns
-model.player.Player "*" *--> "-m_weapons" model.placableObject.weapon.Weapon : > owns
 model.player.Player "1" o--> "1..*" model.player.PlayerObserver : > notifies changes
 
 'AI relations
