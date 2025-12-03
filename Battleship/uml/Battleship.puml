@@ -220,9 +220,9 @@ package model
             {
                 +createWeapon(weaponType : WeaponType) : Weapon
             }
-            class Missile extends Weapon
+            class Default extends Weapon
             {
-                +<<create>>Missile()
+                +<<create>>Default()
                 +use(opponentGrid : Grid, pos : Integer) : Boolean
             }
             class Bomb extends Weapon
@@ -253,6 +253,7 @@ package model
             +notifyTrapPlaced(trap : Trap)
             +notifyAttack(pos : Integer, weapon : Weapon)
             +attack(opponent : Player, pos : Integer, weapon : Weapon)
+            +getName() : String
         }
         class Human extends Player
         {
@@ -374,7 +375,7 @@ model.placableObject.ship.Ship "1" o--> "-m_direction" model.placableObject.ship
 model.placableObject.weapon.Weapon ..> model.grid.Grid : <<uses>>
 
 'Blackhole relations
-model.placableObject.trap.Blackhole ..> model.placableObject.weapon.Missile : <<uses>>
+model.placableObject.trap.Blackhole ..> model.placableObject.weapon.Default : <<uses>>
 model.placableObject.trap.Blackhole ..> model.grid.Grid : <<uses>>
 
 'Tornado relations
@@ -407,7 +408,7 @@ model.placableObject.ship.ShipFactory ..> model.placableObject.ship.AircraftCarr
 model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Weapon : <<uses>>
 model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Bomb : <<instantiate>>
 model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Sonar : <<instantiate>>
-model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Missile : <<instantiate>>
+model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Default : <<instantiate>>
 
 'TrapFactory relations
 model.placableObject.trap.TrapFactory .> model.placableObject.trap.Trap : <<uses>>
