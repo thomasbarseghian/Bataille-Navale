@@ -1,8 +1,6 @@
 package model.grid;
 
-import model.placableObject.Trap.PlaceableObject;
-
-import javax.lang.model.type.NullType;
+import model.placableObject.PlaceableObject;
 
 public class Tile {
     private Boolean m_isHit;
