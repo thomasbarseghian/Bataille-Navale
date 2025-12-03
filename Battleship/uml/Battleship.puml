@@ -32,6 +32,7 @@ package view
             +updateTrapPlaced(trap : Trap)
             +updateAttack(pos : Integer, weapon : Weapon)
             +updateEffectApplied(effect : Effects)
+            +updateNumberOfShips(numberOfShips: Integer)
             +updateTurnNumber(turnNumber: Integer)
             +updateHit(hit: Integer)
             +updateMiss(miss: Integer)
@@ -81,7 +82,7 @@ package model
             -m_hit : Integer
             -m_islandTileSearched : Integer
             +<<create>>Grid(size : Integer)
-            +placeObject(object : PlacableObject, pos : Integer)
+            +placeObject(object : PlacableObject)
             +getMiss() : Integer
             +getHit() : Integer
             +getIslandTileSearched() : Integer
@@ -107,7 +108,7 @@ package model
         class Tile
         {
             -isHit : Boolean
-            +<<create>>Tile(type : TileType, object : PlacableObject)
+            +<<create>>Tile(type : TileType)
             +getObject() : PlacableObject
             +getTileType() : TileType
             +setObject(object : PlacableObject)
@@ -120,8 +121,11 @@ package model
     }
     package placableObject
     {
-        interface PlacableObject <<interface>>
+        abstract PlacableObject <<abstract>>
         {
+            -m_position : Integer
+            +getPosition()
+            +setPosition(pos:Integer)
 
         }
 
@@ -136,6 +140,7 @@ package model
             class Trap <<abstract>> implements model.placableObject.PlacableObject
             {
                 +<<create>>Trap()
+                +activate(opponentGrid : Grid)
             }
 
             interface TrapFactory
@@ -146,15 +151,22 @@ package model
             class Blackhole extends Trap
             {
                 +<<create>>Blackhole()
-                +activate(opponentGrid : Grid, pos : Integer)
+                +activate(player : Player,pos : Integer)
             }
             class Tornado extends Trap
             {
                 'An integer initialized to 0 will be created in the constructor, and each call to Scramble will increment this integer
                 'by 1 until it reaches 3 (or a multiple of 3 if multiple Tornado traps can be placed on the same grid)
+                -remainingScrambles : Integer
                 +<<create>>Tornado()
                 +activate(player : Player)
                 +scramble(opponentGrid : Grid)
+                +getRemainingScrambles() : Integer
+                +isExpired() : Boolean
+            }
+            enum trapType{
+                BLACKHOLE
+                TORNADO
             }
         }
         package ship
@@ -200,8 +212,11 @@ package model
             }
             enum ShipType
             {
+                AIRCRAFTCARRIER
+                CRUISER
+                DESTROYER
                 SUBMARINE
-                NOTSUBMARINE
+                TORPEDOBOAT
             }
             enum Direction
             {
@@ -233,7 +248,13 @@ package model
             class Sonar extends Weapon
             {
                 +<<create>>Sonar()
-                +use(opponentGrid : Grid, pos : Integer) : Boolean
+                +use(opponentGrid : Grid, pos : Integer) : Booolean
+            }
+            enum WeaponType
+            {
+                MISSILE
+                BOMB
+                SONAR
             }
         }
     }
@@ -242,11 +263,24 @@ package model
         class Player <<abstract>>
         {
             -m_name : String
+            -m_isTornadoed : Boolean
+            +<<create>>Player(grid : Grid)
+            placeObject(object : PlacableObject)
+            +placeBoatFix()
+            +placeBoatRandom()
+            +placeTrapFix()
+            +placeTrapRandom()
+            +placeWeaponFix()
+            +placeWeaponRandom()
+            +playTurn()
+            -m_name : String
             +<<create>>Player(grids : Grid)
             +placeObject()
             +setWeaponStrategy(weapon : Weapon)
             +addWeapon(weapon : Weapon)
             +addTrap(trap : Trap)
+            +setIsTornadoed(is : Boolean)
+            +getGrid()
             +addObserver(observer : PlayerObserver)
             +removeObserver(observer : PlayerObserver)
             +notifyShipPlaced(ship : Ship)
@@ -274,7 +308,6 @@ package model
         }
         class AI extends Player
         {
-            -m_tilesHit : Integer[*]
             +<<create>>AI(grid : Grid)
             +placeBoatFix()
             +placeTrapFix()
@@ -296,14 +329,12 @@ package model
             RANDOM
             THOUGHT
         }
-
         interface PlayerObserver
         {
             +updateShips(ships : Ship[*])
             +updateTraps(traps : Trap[*])
             +updateWeapons(weapons : Weapon[*])
             +updateAttack(pos : Integer, weapon : Weapon)
-            +updateEffectApplied(effect : Effects)
         }
     }
     package game
@@ -334,19 +365,9 @@ package model
             +updateGameState(gamestate: GameState)
             +updateTurnNumber(turnNumber: Integer)
         }
-    }
-    package effects
-    {
-        interface Effects <<interface>>
-        {
-            +onBeforeAttack(player : Player)
-            +isExpired() : Boolean
-        }
-        class TornadoEffect implements Effects
-        {
-            -remainingScrambles : Integer
-            +<<create>>TornadoEffect()
-            +getRemainingScrambles() : Integer
+        class MoveData {
+            -m_position : Integer
+            -m_hit : Boolean
         }
     }
 }
@@ -358,6 +379,11 @@ model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
 model.game.Game "2" o--> "-m_players" model.player.Player: > is played bys
 model.game.Game "1" o--> "-m_currentPlayer" model.player.Player : > current turn
 model.game.Game "*" o--> "-m_gameObservers" model.game.GameObserver : > notifies
+model.game.Game "*" o--> "-m_moveHistory" model.game.MoveData : > has been played
+
+'MoveData relations
+model.game.MoveData "1" o--> "-m_player" model.player.Player: > move played by
+model.game.MoveData "1" o--> "-m_weapon" model.placableObject.weapon.WeaponType: > move attacked with
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
@@ -380,10 +406,10 @@ model.placableObject.trap.Blackhole ..> model.grid.Grid : <<uses>>
 
 'Tornado relations
 model.placableObject.trap.Tornado ..> model.grid.Grid : <<uses>>
+model.placableObject.trap.Tornado ..> model.player.Player : <<uses>>
 
 'Player relations
 model.player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
-model.player.Player "*" *--> "-m_activeEffects" model.effects.Effects : > is affected by
 model.player.Player "*" *--> "-m_ships" model.placableObject.ship.Ship : > owns
 model.player.Player "*" *--> "-m_traps" model.placableObject.trap.Trap : > owns
 model.player.Player "*" *--> "-m_weapons" model.placableObject.weapon.Weapon : > owns
