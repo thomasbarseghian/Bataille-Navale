@@ -1,6 +1,6 @@
 package model.grid;
 
-import model.placableObject.Trap.PlaceableObject;
+import model.placableObject.PlaceableObject;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,7 @@ public class Grid {
         m_grid.get(pos).hit();
         notifyTileHit(pos);
     }
-    public void placeObject(PlaceableObject object){
+    public void putPlaceObjectInTile(PlaceableObject object){
         //m_grid.get()
     }
     public void addObserver(GridObserver obs){
