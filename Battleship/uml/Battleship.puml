@@ -34,20 +34,14 @@ package view
             +updateEffectApplied(effect : Effects)
             +updateNumberOfShips(numberOfShips: Integer)
             +updateTurnNumber(turnNumber: Integer)
-            +updateHit(hit: Integer)
-            +updateMiss(miss: Integer)
-            +updateIslandTileSearched(islandTileSearched: Integer)
-            +updateTileHit(pos: Integer, ishit :Boolean)
+            +updateTileHit(pos: Integer)
         }
 
         class EndScreen
         {
             +<<create>>EndScreen()
             +updateTurnNumber(turnNumber: Integer)
-            +updateHit(hit: Integer)
-            +updateMiss(miss: Integer)
-            +updateIslandTileSearched(islandTileSearched: Integer)
-            +updateTileHit(pos: Integer, ishit :Boolean)
+            +updateTileHit(pos: Integer)
         }
 }
 
@@ -78,40 +72,28 @@ package model
         class Grid
         {
             -m_size : Integer
-            -m_miss : Integer
-            -m_hit : Integer
-            -m_islandTileSearched : Integer
             +<<create>>Grid(size : Integer)
+            +hitTile(pos:Integer)
             +placeObject(object : PlacableObject)
-            +getMiss() : Integer
-            +getHit() : Integer
-            +getIslandTileSearched() : Integer
-            +miss()
-            +hit()
-            +search()
             +addObserver(obs : GridObserver)
             +removeObserver(obs : GridObserver)
-            +notifyHit(hit: Integer)
-            +notifyMiss(miss: Integer)
-            +notifyIslandTileSearched(islandTileSearched: Integer)
-            +notifyTileHit(pos: Integer, ishit :Boolean)
+            +notifyTileHit(pos: Integer)
         }
 
         interface GridObserver <<interface>>
         {
-            +updateHit(hit: Integer)
-            +updateMiss(miss: Integer)
-            +updateIslandTileSearched(islandTileSearched: Integer)
-            +updateTileHit(pos: Integer, ishit :Boolean)
+            +updateTileHit(pos: Integer)
         }
 
         class Tile
         {
-            -isHit : Boolean
+            -m_isHit : Boolean
             +<<create>>Tile(type : TileType)
             +getObject() : PlacableObject
             +getTileType() : TileType
+            +getIsHit() : Boolean
             +setObject(object : PlacableObject)
+            +hit()
         }
         enum TileType
         {
@@ -388,7 +370,7 @@ model.grid.Grid "*" o--> "-m_gridObservers" model.grid.GridObserver : > notify
 
 'Tile relations
 model.grid.Tile "1" *--> "-m_object" model.placableObject.PlacableObject: > has elements of the type
-model.grid.Tile *-> "1" model.grid.TileType : > is of the type\t
+model.grid.Tile "1" *->  "-m_tileType" model.grid.TileType : > is of the type\t
 
 'Ship relations
 model.placableObject.ship.Ship "1" o--> "-m_shipTyрe" model.placableObject.ship.ShipType: > is of the type
