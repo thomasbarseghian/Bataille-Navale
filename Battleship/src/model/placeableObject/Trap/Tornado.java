@@ -1,4 +1,4 @@
-package model.placableObject.Trap;
+package model.placeableObject.Trap;
 
 public class Tornado extends Trap {
 

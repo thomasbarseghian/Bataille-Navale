@@ -1,6 +1,6 @@
 package model.grid;
 
-import model.placableObject.PlaceableObject;
+import model.placeableObject.PlaceableObject;
 
 public class Tile {
     private Boolean m_isHit;

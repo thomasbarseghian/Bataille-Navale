@@ -1,4 +1,4 @@
-package model.placableObject;
+package model.placeableObject;
 
 public abstract class PlaceableObject {
     int m_position; //-1 si pas de position

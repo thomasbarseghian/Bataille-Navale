@@ -1,6 +1,6 @@
 package model.grid;
 
-import model.placableObject.PlaceableObject;
+import model.placeableObject.PlaceableObject;
 
 import java.util.ArrayList;
 

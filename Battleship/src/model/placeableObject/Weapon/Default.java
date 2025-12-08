@@ -1,4 +1,4 @@
-package model.placableObject.Weapon;
+package model.placeableObject.Weapon;
 
 public class Default extends Weapon{
     
