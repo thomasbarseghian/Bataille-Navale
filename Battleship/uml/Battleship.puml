@@ -165,8 +165,9 @@ package model
                 +getHp() : Integer
                 +getSize() : Integer
                 +getDirection() : Direction
-                +getShipTiles() : Integer
-                +setDirection(d : Direction)
+                +getShipType() : ShipType
+                +setDirection(direction : Direction)
+                +setHp(newhp : Integer)
                 +hit()
                 'We will only know the direction when placing the boat not during the creation
             }
