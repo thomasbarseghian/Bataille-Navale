@@ -260,7 +260,7 @@ package model
             +addWeapon(weapon : Weapon)
             +addTrap(trap : Trap)
             +setIsTornadoed(isAffected : Boolean)
-            +attack(opponent : Player, pos : Integer, weapon : Weapon)
+            +attack(opponent : Player, pos : Integer)
             +addObserver(observer : PlayerObserver)
             +removeObserver(observer : PlayerObserver)
             +notifyShipPlaced(ship : Ship)
