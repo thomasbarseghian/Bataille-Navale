@@ -1,4 +1,4 @@
-package model.placableObject.ship;
+package model.placeableObject.ship;
 
 public enum Direction {
     HORIZONTAL,

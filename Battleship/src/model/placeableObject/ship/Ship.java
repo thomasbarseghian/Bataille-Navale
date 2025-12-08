@@ -1,6 +1,6 @@
-package model.placableObject.ship;
+package model.placeableObject.ship;
 
-import model.placableObject.PlaceableObject;
+import model.placeableObject.PlaceableObject;
 
 public abstract class Ship extends PlaceableObject {
     private int m_size;

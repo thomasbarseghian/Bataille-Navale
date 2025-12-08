@@ -75,9 +75,11 @@ package model
             +<<create>>Grid(size : Integer)
             +hitTile(pos:Integer)
             +placeObject(object : PlacableObject)
+            +attackAt(pos : Integer, Weapon weapon) : PlaceableObject
             +addObserver(obs : GridObserver)
             +removeObserver(obs : GridObserver)
-            +notifyTileHit(pos: Integer)
+            +notifyTileHit(pos : Integer)
+            +getTile(pos : Integer) : Tile
         }
 
         interface GridObserver <<interface>>
@@ -217,9 +219,9 @@ package model
             {
                 +createWeapon(weaponType : WeaponType) : Weapon
             }
-            class Missile extends Weapon
+            class Default extends Weapon
             {
-                +<<create>>Missile()
+                +<<create>>Default()
                 +use(opponentGrid : Grid, pos : Integer) : Boolean
             }
             class Bomb extends Weapon
@@ -244,31 +246,28 @@ package model
     {
         class Player <<abstract>>
         {
-            -m_name : String
-            -m_isTornadoed : Boolean
-            +<<create>>Player(grid : Grid)
-            placeObject(object : PlacableObject)
-            +placeBoatFix()
-            +placeBoatRandom()
+            #m_name : String
+            #m_isTornadoed : Boolean
+            +<<create>>Player(name : String, grid : Grid)
+            +placeObject(object : PlacableObject)
+            +placeShipFix()
+            +placeShipRandom()
             +placeTrapFix()
             +placeTrapRandom()
             +placeWeaponFix()
             +placeWeaponRandom()
-            +playTurn()
-            -m_name : String
-            +<<create>>Player(grids : Grid)
-            +placeObject()
             +setWeaponStrategy(weapon : Weapon)
             +addWeapon(weapon : Weapon)
             +addTrap(trap : Trap)
-            +setIsTornadoed(is : Boolean)
-            +getGrid()
+            +setIsTornadoed(isAffected : Boolean)
+            +attack(opponent : Player, pos : Integer, weapon : Weapon)
             +addObserver(observer : PlayerObserver)
             +removeObserver(observer : PlayerObserver)
             +notifyShipPlaced(ship : Ship)
             +notifyTrapPlaced(trap : Trap)
             +notifyAttack(pos : Integer, weapon : Weapon)
-            +attack(opponent : Player, pos : Integer, weapon : Weapon)
+            +getName() : String
+            +getGrid() : Grid
         }
         class Human extends Player
         {
@@ -382,7 +381,7 @@ model.placableObject.ship.Ship "1" o--> "-m_direction" model.placableObject.ship
 model.placableObject.weapon.Weapon ..> model.grid.Grid : <<uses>>
 
 'Blackhole relations
-model.placableObject.trap.Blackhole ..> model.placableObject.weapon.Missile : <<uses>>
+model.placableObject.trap.Blackhole ..> model.placableObject.weapon.Default : <<uses>>
 model.placableObject.trap.Blackhole ..> model.grid.Grid : <<uses>>
 
 'Tornado relations
@@ -390,15 +389,12 @@ model.placableObject.trap.Tornado ..> model.grid.Grid : <<uses>>
 model.placableObject.trap.Tornado ..> model.player.Player : <<uses>>
 
 'Player relations
-model.player.Player "1" *--> "-m_ownGrid" model.grid.Grid : > places on
-model.player.Player "*" *--> "-m_ships" model.placableObject.ship.Ship : > owns
-model.player.Player "*" *--> "-m_traps" model.placableObject.trap.Trap : > owns
-model.player.Player "*" *--> "-m_weapons" model.placableObject.weapon.Weapon : > owns
-model.player.Player "1" o--> "-m_weaponStrategy" model.placableObject.weapon.Weapon : > uses the strategy
-model.player.Player "*" *--> "-m_ships" model.placableObject.ship.Ship : > owns
-model.player.Player "*" *--> "-m_traps" model.placableObject.trap.Trap : > owns
-model.player.Player "*" *--> "-m_weapons" model.placableObject.weapon.Weapon : > owns
-model.player.Player "1" o--> "1..*" model.player.PlayerObserver : > notifies changes
+model.player.Player "1" *--> "#m_grid" model.grid.Grid : > places on
+model.player.Player "*" *--> "#m_ships" model.placableObject.ship.Ship : > owns
+model.player.Player "*" *--> "#m_traps" model.placableObject.trap.Trap : > owns
+model.player.Player "*" *--> "#m_weapons" model.placableObject.weapon.Weapon : > owns
+model.player.Player "1" o--> "#m_weaponStrategy" model.placableObject.weapon.Weapon : > uses the strategy
+model.player.Player "1..*" o--> "#m_observers" model.player.PlayerObserver : > notifies changes
 
 'AI relations
 model.player.difficulty .> model.player.AI : <<uses>>
@@ -415,7 +411,7 @@ model.placableObject.ship.ShipFactory ..> model.placableObject.ship.AircraftCarr
 model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Weapon : <<uses>>
 model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Bomb : <<instantiate>>
 model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Sonar : <<instantiate>>
-model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Missile : <<instantiate>>
+model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Default : <<instantiate>>
 
 'TrapFactory relations
 model.placableObject.trap.TrapFactory .> model.placableObject.trap.Trap : <<uses>>
