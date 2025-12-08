@@ -1,6 +1,7 @@
 package model.grid;
 
 import model.placeableObject.PlaceableObject;
+import model.placeableObject.Weapon.Weapon;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,12 @@ public class Grid {
     public void putPlaceObjectInTile(PlaceableObject object){
         //m_grid.get()
     }
+
+    public PlaceableObject attackAt(int pos, Weapon weapon) {
+        weapon.use(this, pos);        // Grid applique l’effet
+        return m_grid.get(pos).getObject(); // Retourne ce qui est sur la case
+    }
+
     public void addObserver(GridObserver obs){
         m_gridObservers.add(obs);
     }
@@ -31,6 +38,11 @@ public class Grid {
             obs.updateTileHit(pos);
                 }
         );
+    }
+
+    public Tile getTile(int pos)
+    {
+        return m_grid.get(pos);
     }
 
 }

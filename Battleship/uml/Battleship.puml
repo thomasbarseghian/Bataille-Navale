@@ -75,9 +75,11 @@ package model
             +<<create>>Grid(size : Integer)
             +hitTile(pos:Integer)
             +placeObject(object : PlacableObject)
+            +attackAt(pos : Integer, Weapon weapon) : PlaceableObject
             +addObserver(obs : GridObserver)
             +removeObserver(obs : GridObserver)
-            +notifyTileHit(pos: Integer)
+            +notifyTileHit(pos : Integer)
+            +getTile(pos : Integer) : Tile
         }
 
         interface GridObserver <<interface>>

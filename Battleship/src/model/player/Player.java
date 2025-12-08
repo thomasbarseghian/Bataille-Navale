@@ -66,11 +66,31 @@ public abstract class Player {
         m_isTornadoed = isAffected;
     }
 
-    //A FAIRE /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void attack(Player oppenent, int pos, Weapon weapon)
+    public void attack(Player opponent, int pos, Weapon weapon)
     {
-        Grid oponentGrid = oppenent.getGrid();
-        // A FINIR
+        Grid opponentGrid = opponent.getGrid();
+
+        // 1. Notifier la vue (MVC + Observer)
+        notifyAttack(pos, weapon);
+
+        // 2. Si le joueur est affecté par une tornade, scramble la position
+        if (m_isTornadoed)
+        {
+            //IL FAUT UNE METHODE
+        }
+
+        // 3. Appeler la stratégie de l’arme
+        weapon.use(opponentGrid, pos);
+
+        // 4. Vérifier si un trap a été touché
+        //PlaceableObject obj = opponentGrid.getObjectAt(pos);
+        //notifyAttack(pos, weapon, obj.getType());
+        //checkIfTrapTriggered(opponent, pos);
+    }
+
+    public void notifyAttack(int pos, Weapon weapon)
+    {
+
     }
 
     public String getName()
