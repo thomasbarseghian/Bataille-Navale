@@ -110,7 +110,7 @@ package model
             -m_position : Integer
             +getPosition()
             +setPosition(pos:Integer)
-
+            +getObjectType():PlaceableObjectType
         }
 
         enum PlaceableObjectType
@@ -148,7 +148,7 @@ package model
                 +getRemainingScrambles() : Integer
                 +isExpired() : Boolean
             }
-            enum trapType{
+            enum TrapType{
                 BLACKHOLE
                 TORNADO
             }
@@ -353,8 +353,7 @@ package model
     }
 }
 'PlaceableObject relations
-model.PlaceableObject.PlaceableObjectType .> model.PlaceableObject.PlaceableObject : <<uses>>
-
+model.PlaceableObject.PlaceableObject "1" *->  "-m_objectType" model.PlaceableObject.PlaceableObjectType : > is of the type\t
 'Game relations
 model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
 model.game.Game "2" o--> "-m_players" model.player.Player: > is played bys
@@ -380,6 +379,10 @@ model.PlaceableObject.ship.Ship "1" o--> "-m_direction" model.PlaceableObject.sh
 
 'Weapon relations
 model.PlaceableObject.weapon.Weapon ..> model.grid.Grid : <<uses>>
+model.PlaceableObject.weapon.Weapon "1" *->  "-m_weaponType" model.PlaceableObject.weapon.Weapon : > is of the type\t
+
+'Trap relations
+model.PlaceableObject.trap.Trap "1" *->  "-m_trapType" model.PlaceableObject.trap.TrapType : > is of the type
 
 'Blackhole relations
 model.PlaceableObject.trap.Blackhole ..> model.PlaceableObject.weapon.Default : <<uses>>
