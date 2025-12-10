@@ -18,8 +18,26 @@ public class Grid {
         m_grid.get(pos).hit();
         notifyTileHit(pos);
     }
-    public void putPlaceObjectInTile(PlaceableObject object){
-        //m_grid.get()
+    public Boolean putPlaceObjectInTile(PlaceableObject object){
+        int pos = object.getPosition();
+        switch(object.getObjectType()) {
+            case SHIP:
+
+                int[] allpositions = new int[];
+            case TRAP:
+                // no trap for the moment : m_grid.get(object.getPosition()).setObject(object);
+                return false;
+            case WEAPON:
+                if(m_grid.get(pos).getTileType()==TileType.LAND){
+                    if(!(m_grid.get(pos).getObject()==null)){
+                        m_grid.get(pos).setObject(object);
+                        return true;
+                    }
+                }
+                return false;
+            default:
+                return false;
+        }
     }
 
     public PlaceableObject attackAt(int pos, Weapon weapon) {

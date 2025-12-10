@@ -74,7 +74,7 @@ package model
             -m_size : Integer
             +<<create>>Grid(size : Integer)
             +hitTile(pos:Integer)
-            +placeObject(object : PlaceableObject)
+            +placeObject(object : PlaceableObject) : Boolean
             +attackAt(pos : Integer, Weapon weapon) : PlaceableObject
             +addObserver(obs : GridObserver)
             +removeObserver(obs : GridObserver)
