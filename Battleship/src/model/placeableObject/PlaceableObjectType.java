@@ -1,5 +1,5 @@
 package model.placeableObject;
-public enum PlacableObjectType {
+public enum PlaceableObjectType {
     SHIP,
     TRAP,
     WEAPON
