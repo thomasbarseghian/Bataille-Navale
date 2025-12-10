@@ -2,6 +2,7 @@ package model.grid;
 
 import model.placeableObject.PlaceableObject;
 import model.placeableObject.Weapon.Weapon;
+import model.placeableObject.ship.Ship;
 
 import java.util.ArrayList;
 
@@ -18,25 +19,21 @@ public class Grid {
         m_grid.get(pos).hit();
         notifyTileHit(pos);
     }
-    public Boolean putPlaceObjectInTile(PlaceableObject object){
+    public void putPlaceObjectInTile(PlaceableObject object){
         int pos = object.getPosition();
         switch(object.getObjectType()) {
             case SHIP:
-
-                int[] allpositions = new int[];
+                ArrayList<Integer> allpositions = ((Ship)object).getAllPositions();
+                allpositions.forEach((position)->{
+                            m_grid.get(position).setObject(object);
+                        }
+                );
             case TRAP:
                 // no trap for the moment : m_grid.get(object.getPosition()).setObject(object);
-                return false;
             case WEAPON:
-                if(m_grid.get(pos).getTileType()==TileType.LAND){
-                    if(!(m_grid.get(pos).getObject()==null)){
-                        m_grid.get(pos).setObject(object);
-                        return true;
-                    }
-                }
-                return false;
+                m_grid.get(pos).setObject(object);
             default:
-                return false;
+                break;
         }
     }
 
@@ -47,9 +44,6 @@ public class Grid {
 
     public void addObserver(GridObserver obs){
         m_gridObservers.add(obs);
-    }
-    public void removeObserver(GridObserver obs){
-        m_gridObservers.remove(obs);
     }
     public void notifyTileHit(int pos){
         m_gridObservers.forEach((obs)->{

@@ -2,6 +2,8 @@ package model.placeableObject.ship;
 
 import model.placeableObject.PlaceableObject;
 
+import java.util.ArrayList;
+
 public abstract class Ship extends PlaceableObject {
     private int m_size;
     private int m_hp;
@@ -36,5 +38,20 @@ public abstract class Ship extends PlaceableObject {
     }
     public void hit(){
         m_hp--;
+    }
+    public ArrayList<Integer> getAllPositions(){
+        int pos = this.getPosition();
+        ArrayList<Integer> AllPositions = new ArrayList<>();
+        if(m_direction==Direction.HORIZONTAL){
+            for (int i = 0; i < m_size; i++) {
+                AllPositions.add(pos+i);
+            }
+        }
+        else{
+            for (int i = 0; i < m_size; i++) {
+                AllPositions.add(pos+i*10);
+            }
+        }
+        return AllPositions;
     }
 }

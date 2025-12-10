@@ -77,7 +77,6 @@ package model
             +placeObject(object : PlaceableObject) : Boolean
             +attackAt(pos : Integer, Weapon weapon) : PlaceableObject
             +addObserver(obs : GridObserver)
-            +removeObserver(obs : GridObserver)
             +notifyTileHit(pos : Integer)
             +getTile(pos : Integer) : Tile
         }
@@ -169,6 +168,7 @@ package model
                 +setDirection(direction : Direction)
                 +setHp(newhp : Integer)
                 +hit()
+                +getAllPositions():Integer[*]
                 'We will only know the direction when placing the boat not during the creation
             }
             interface ShipFactory
@@ -263,7 +263,6 @@ package model
             +setIsTornadoed(isAffected : Boolean)
             +attack(opponent : Player, pos : Integer)
             +addObserver(observer : PlayerObserver)
-            +removeObserver(observer : PlayerObserver)
             +notifyShipPlaced(ship : Ship)
             +notifyTrapPlaced(trap : Trap)
             +notifyAttack(pos : Integer, weapon : Weapon)
@@ -281,7 +280,6 @@ package model
             +addWeapon(weapon : Weapon)
             +addTrap(trap : Trap)
             +addObserver(observer : PlayerObserver)
-            +removeObserver(observer : PlayerObserver)
             +notifyShipPlaced(ship : Ship)
             +notifyTrapPlaced(trap : Trap)
             +notifyAttack(pos : Integer, weapon : Weapon)
@@ -296,7 +294,6 @@ package model
             +addWeapon(weapon : Weapon)
             +addTrap(trap : Trap)
             +addObserver(observer : PlayerObserver)
-            +removeObserver(observer : PlayerObserver)
             +notifyShipPlaced(ship : Ship)
             +notifyTrapPlaced(trap : Trap)
             +notifyAttack(pos : Integer, weapon : Weapon)
@@ -330,7 +327,6 @@ package model
             +getGameState() : GameState
             +getTurnNumber() : Integer
             +addObserver(obs : GameObserver)
-            +removeObserver(obs : GameObserver)
             +notifyGameState(gamestate: GameState)
             +notifyTurnNumber(turnNumber: Integer)
         }
