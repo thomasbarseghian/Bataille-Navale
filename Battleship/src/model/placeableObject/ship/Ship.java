@@ -25,7 +25,7 @@ public abstract class Ship extends PlaceableObject {
     public Direction getDirection(){
         return this.m_direction;
     }
-    public ShipType get(){
+    public ShipType getShipType(){
         return this.m_shipTyрe;
     }
     public void setHp(int newhp){
@@ -33,5 +33,8 @@ public abstract class Ship extends PlaceableObject {
     }
     public void setDirection(Direction direction){
         m_direction=direction;
+    }
+    public void hit(){
+        m_hp--;
     }
 }
