@@ -42,9 +42,9 @@ public abstract class Player {
 
     public abstract void placeShipFix();
 
-    public abstract void placeTrapFix();
+    //public abstract void placeTrapFix();
 
-    public abstract void placeWeaponFix();
+    //public abstract void placeWeaponFix();
 
     public void setWeaponStrategy(Weapon weapon)
     {
@@ -96,6 +96,14 @@ public abstract class Player {
         }
     }
 
+    public void notifyShipPlaced(Ship ship)
+    {
+        for (PlayerObserver observer : m_observers)
+        {
+            observer.updateShips(ship);
+        }
+    }
+
     public String getName()
     {
         return m_name;
@@ -103,5 +111,10 @@ public abstract class Player {
 
     public Grid getGrid() {
         return m_grid;
+    }
+
+    public void addObserver(PlayerObserver observer)
+    {
+        m_observers.add(observer);
     }
 }

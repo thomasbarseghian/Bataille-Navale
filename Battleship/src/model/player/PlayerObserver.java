@@ -6,8 +6,8 @@ import model.placeableObject.ship.Ship;
 
 public interface PlayerObserver {
 
-    public void updateShips(Ship[] ships);
-    public void updateTraps(Trap[] traps);
-    public void updateWeapons(Weapon[] weapons);
+    public void updateShips(Ship ship);
+//    public void updateTraps(Trap trap);
+//    public void updateWeapons(Weapon weapon);
     public void updateAttack(int pos, Weapon weapon);
 }

@@ -1,7 +1,6 @@
 package model.player;
 
 import model.grid.Grid;
-import model.placeableObject.Weapon.Weapon;
 import model.placeableObject.ship.Ship;
 
 import java.util.ArrayList;
@@ -9,8 +8,9 @@ import java.util.ArrayList;
 import static model.placeableObject.ship.Direction.HORIZONTAL;
 import static model.placeableObject.ship.Direction.VERTICAL;
 
-public class Human extends Player{
-    public Human(String name, Grid grid, ArrayList<Ship> ships)
+public class AI extends Player
+{
+    public AI(String name, Grid grid, ArrayList<Ship> ships)
     {
         super(name, grid, ships);
     }
@@ -20,27 +20,27 @@ public class Human extends Player{
         //Works if each Player has 5 ships
         Ship currentShip = m_ships.get(0);
         currentShip.setDirection(VERTICAL);
-        currentShip.setPosition(0);
+        currentShip.setPosition(12);
         m_grid.putPlaceObjectInTile(currentShip);
 
         currentShip = m_ships.get(1);
         currentShip.setDirection(HORIZONTAL);
-        currentShip.setPosition(14);
+        currentShip.setPosition(34);
         m_grid.putPlaceObjectInTile(currentShip);
 
         currentShip = m_ships.get(2);
         currentShip.setDirection(VERTICAL);
-        currentShip.setPosition(28);
+        currentShip.setPosition(59);
         m_grid.putPlaceObjectInTile(currentShip);
 
         currentShip = m_ships.get(3);
         currentShip.setDirection(HORIZONTAL);
-        currentShip.setPosition(82);
+        currentShip.setPosition(92);
         m_grid.putPlaceObjectInTile(currentShip);
 
         currentShip = m_ships.get(4);
         currentShip.setDirection(VERTICAL);
-        currentShip.setPosition(47);
+        currentShip.setPosition(49);
         m_grid.putPlaceObjectInTile(currentShip);
     }
 
@@ -54,7 +54,7 @@ public class Human extends Player{
 //    public void placeWeaponFix()
 //    {
 //        Weapon currentWeapon = m_weapons.get(0);
-//        currentWeapon.setPosition(55);
+//        currentWeapon.setPosition(53);
 //        m_grid.putPlaceObjectInTile(currentWeapon);
 //    }
 }
