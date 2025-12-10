@@ -74,7 +74,7 @@ package model
             -m_size : Integer
             +<<create>>Grid(size : Integer)
             +hitTile(pos:Integer)
-            +placeObject(object : PlacableObject)
+            +placeObject(object : PlaceableObject) : Boolean
             +attackAt(pos : Integer, Weapon weapon) : PlaceableObject
             +addObserver(obs : GridObserver)
             +removeObserver(obs : GridObserver)
@@ -91,10 +91,10 @@ package model
         {
             -m_isHit : Boolean
             +<<create>>Tile(type : TileType)
-            +getObject() : PlacableObject
+            +getObject() : PlaceableObject
             +getTileType() : TileType
             +getIsHit() : Boolean
-            +setObject(object : PlacableObject)
+            +setObject(object : PlaceableObject)
             +hit()
         }
         enum TileType
@@ -103,17 +103,17 @@ package model
             LAND
         }
     }
-    package placableObject
+    package PlaceableObject
     {
-        abstract PlacableObject <<abstract>>
+        abstract PlaceableObject <<abstract>>
         {
             -m_position : Integer
             +getPosition()
             +setPosition(pos:Integer)
-
+            +getObjectType():PlaceableObjectType
         }
 
-        enum PlacableObjectType
+        enum PlaceableObjectType
         {
             SHIP
             TRAP
@@ -121,7 +121,7 @@ package model
         }
         package trap
         {
-            class Trap <<abstract>> implements model.placableObject.PlacableObject
+            class Trap <<abstract>> implements model.PlaceableObject.PlaceableObject
             {
                 +<<create>>Trap()
                 +activate(opponentGrid : Grid)
@@ -148,14 +148,14 @@ package model
                 +getRemainingScrambles() : Integer
                 +isExpired() : Boolean
             }
-            enum trapType{
+            enum TrapType{
                 BLACKHOLE
                 TORNADO
             }
         }
         package ship
         {
-            class Ship <<abstract>> implements model.placableObject.PlacableObject
+            class Ship <<abstract>> implements model.PlaceableObject.PlaceableObject
             {
                 -m_size : Integer
                 -m_hp : Integer
@@ -211,7 +211,7 @@ package model
         }
         package weapon
         {
-            class Weapon <<abstract>> implements model.placableObject.PlacableObject
+            class Weapon <<abstract>> implements model.PlaceableObject.PlaceableObject
             {
                 +<<create>>Weapon(type : WeaponType)
                 +use(opponentGrid : Grid, pos : Integer)
@@ -250,7 +250,7 @@ package model
             #m_name : String
             #m_isTornadoed : Boolean
             +<<create>>Player(name : String, grid : Grid)
-            +placeObject(object : PlacableObject)
+            +placeObject(object : PlaceableObject)
             +placeShipFix()
             +placeShipRandom()
             +placeTrapFix()
@@ -353,8 +353,7 @@ package model
     }
 }
 'PlaceableObject relations
-model.placableObject.PlacableObjectType .> model.placableObject.PlacableObject : <<uses>>
-
+model.PlaceableObject.PlaceableObject "1" *->  "-m_objectType" model.PlaceableObject.PlaceableObjectType : > is of the type\t
 'Game relations
 model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
 model.game.Game "2" o--> "-m_players" model.player.Player: > is played bys
@@ -364,60 +363,64 @@ model.game.Game "*" o--> "-m_moveHistory" model.game.MoveData : > has been playe
 
 'MoveData relations
 model.game.MoveData "1" o--> "-m_player" model.player.Player: > move played by
-model.game.MoveData "1" o--> "-m_weapon" model.placableObject.weapon.WeaponType: > move attacked with
+model.game.MoveData "1" o--> "-m_weapon" model.PlaceableObject.weapon.WeaponType: > move attacked with
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
 model.grid.Grid "*" o--> "-m_gridObservers" model.grid.GridObserver : > notify
 
 'Tile relations
-model.grid.Tile "1" *--> "-m_object" model.placableObject.PlacableObject: > has elements of the type
+model.grid.Tile "1" *--> "-m_object" model.PlaceableObject.PlaceableObject: > has elements of the type
 model.grid.Tile "1" *->  "-m_tileType" model.grid.TileType : > is of the type\t
 
 'Ship relations
-model.placableObject.ship.Ship "1" o--> "-m_shipTyрe" model.placableObject.ship.ShipType: > is of the type
-model.placableObject.ship.Ship "1" o--> "-m_direction" model.placableObject.ship.Direction: > is in this direction
+model.PlaceableObject.ship.Ship "1" o--> "-m_shipTyрe" model.PlaceableObject.ship.ShipType: > is of the type
+model.PlaceableObject.ship.Ship "1" o--> "-m_direction" model.PlaceableObject.ship.Direction: > is in this direction
 
 'Weapon relations
-model.placableObject.weapon.Weapon ..> model.grid.Grid : <<uses>>
+model.PlaceableObject.weapon.Weapon ..> model.grid.Grid : <<uses>>
+model.PlaceableObject.weapon.Weapon "1" *->  "-m_weaponType" model.PlaceableObject.weapon.Weapon : > is of the type\t
+
+'Trap relations
+model.PlaceableObject.trap.Trap "1" *->  "-m_trapType" model.PlaceableObject.trap.TrapType : > is of the type
 
 'Blackhole relations
-model.placableObject.trap.Blackhole ..> model.placableObject.weapon.Default : <<uses>>
-model.placableObject.trap.Blackhole ..> model.grid.Grid : <<uses>>
+model.PlaceableObject.trap.Blackhole ..> model.PlaceableObject.weapon.Default : <<uses>>
+model.PlaceableObject.trap.Blackhole ..> model.grid.Grid : <<uses>>
 
 'Tornado relations
-model.placableObject.trap.Tornado ..> model.grid.Grid : <<uses>>
-model.placableObject.trap.Tornado ..> model.player.Player : <<uses>>
+model.PlaceableObject.trap.Tornado ..> model.grid.Grid : <<uses>>
+model.PlaceableObject.trap.Tornado ..> model.player.Player : <<uses>>
 
 'Player relations
 model.player.Player "1" *--> "#m_grid" model.grid.Grid : > places on
-model.player.Player "*" *--> "#m_ships" model.placableObject.ship.Ship : > owns
-model.player.Player "*" *--> "#m_traps" model.placableObject.trap.Trap : > owns
-model.player.Player "*" *--> "#m_weapons" model.placableObject.weapon.Weapon : > owns
-model.player.Player "1" o--> "#m_weaponStrategy" model.placableObject.weapon.Weapon : > uses the strategy
+model.player.Player "*" *--> "#m_ships" model.PlaceableObject.ship.Ship : > owns
+model.player.Player "*" *--> "#m_traps" model.PlaceableObject.trap.Trap : > owns
+model.player.Player "*" *--> "#m_weapons" model.PlaceableObject.weapon.Weapon : > owns
+model.player.Player "1" o--> "#m_weaponStrategy" model.PlaceableObject.weapon.Weapon : > uses the strategy
 model.player.Player "1..*" o--> "#m_observers" model.player.PlayerObserver : > notifies changes
 
 'AI relations
 model.player.difficulty .> model.player.AI : <<uses>>
 
 'ShipFactory relations
-model.placableObject.ship.ShipFactory ..> model.placableObject.ship.Ship : <<uses>>
-model.placableObject.ship.ShipFactory ..> model.placableObject.ship.Submarine : <<instantiate>>
-model.placableObject.ship.ShipFactory ..> model.placableObject.ship.TorpedoBoat : <<instantiate>>
-model.placableObject.ship.ShipFactory ..> model.placableObject.ship.Cruiser : <<instantiate>>
-model.placableObject.ship.ShipFactory ..> model.placableObject.ship.Destroyer : <<instantiate>>
-model.placableObject.ship.ShipFactory ..> model.placableObject.ship.AircraftCarrier : <<instantiate>>
+model.PlaceableObject.ship.ShipFactory ..> model.PlaceableObject.ship.Ship : <<uses>>
+model.PlaceableObject.ship.ShipFactory ..> model.PlaceableObject.ship.Submarine : <<instantiate>>
+model.PlaceableObject.ship.ShipFactory ..> model.PlaceableObject.ship.TorpedoBoat : <<instantiate>>
+model.PlaceableObject.ship.ShipFactory ..> model.PlaceableObject.ship.Cruiser : <<instantiate>>
+model.PlaceableObject.ship.ShipFactory ..> model.PlaceableObject.ship.Destroyer : <<instantiate>>
+model.PlaceableObject.ship.ShipFactory ..> model.PlaceableObject.ship.AircraftCarrier : <<instantiate>>
 
 'WeaponFactory relations
-model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Weapon : <<uses>>
-model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Bomb : <<instantiate>>
-model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Sonar : <<instantiate>>
-model.placableObject.weapon.WeaponFactory .> model.placableObject.weapon.Default : <<instantiate>>
+model.PlaceableObject.weapon.WeaponFactory .> model.PlaceableObject.weapon.Weapon : <<uses>>
+model.PlaceableObject.weapon.WeaponFactory .> model.PlaceableObject.weapon.Bomb : <<instantiate>>
+model.PlaceableObject.weapon.WeaponFactory .> model.PlaceableObject.weapon.Sonar : <<instantiate>>
+model.PlaceableObject.weapon.WeaponFactory .> model.PlaceableObject.weapon.Default : <<instantiate>>
 
 'TrapFactory relations
-model.placableObject.trap.TrapFactory .> model.placableObject.trap.Trap : <<uses>>
-model.placableObject.trap.TrapFactory .> model.placableObject.trap.Blackhole : <<instantiate>>
-model.placableObject.trap.TrapFactory .> model.placableObject.trap.Tornado : <<instantiate>>
+model.PlaceableObject.trap.TrapFactory .> model.PlaceableObject.trap.Trap : <<uses>>
+model.PlaceableObject.trap.TrapFactory .> model.PlaceableObject.trap.Blackhole : <<instantiate>>
+model.PlaceableObject.trap.TrapFactory .> model.PlaceableObject.trap.Tornado : <<instantiate>>
 
 ' EndScreen observe aussi la grille
 EndScreen ..|> model.grid.GridObserver
