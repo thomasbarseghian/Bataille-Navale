@@ -56,7 +56,7 @@ package controller
     {
         +updateGameState(gamestate: GameState)
     }
-    class GameController
+    class MainController
     {
 
     }
