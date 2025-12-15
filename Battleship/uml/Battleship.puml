@@ -319,6 +319,7 @@ package model
         class Game
         {
             -m_turnNumber : Integer
+            -m_currentPlayer" : Integer
             +<<create>> Game()
             +startGame()
             +nextTurn()
@@ -351,8 +352,7 @@ package model
 model.PlaceableObject.PlaceableObject "1" *->  "-m_objectType" model.PlaceableObject.PlaceableObjectType : > is of the type\t
 'Game relations
 model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
-model.game.Game "2" o--> "-m_players" model.player.Player: > is played bys
-model.game.Game "1" o--> "-m_currentPlayer" model.player.Player : > current turn
+model.game.Game "2" o--> "-m_players" model.player.Player: > is played by
 model.game.Game "*" o--> "-m_gameObservers" model.game.GameObserver : > notifies
 model.game.Game "*" o--> "-m_moveHistory" model.game.MoveData : > has been played
 
