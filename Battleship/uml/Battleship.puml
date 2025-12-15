@@ -168,6 +168,7 @@ package model
                 +setDirection(direction : Direction)
                 +setHp(newhp : Integer)
                 +hit()
+                +getAllPositions():Integer[*]
                 'We will only know the direction when placing the boat not during the creation
             }
             interface ShipFactory
