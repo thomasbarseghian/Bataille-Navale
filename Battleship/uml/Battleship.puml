@@ -43,6 +43,11 @@ package view
             +updateTurnNumber(turnNumber: Integer)
             +updateTileHit(pos: Integer)
         }
+        class MainView
+        {
+            +<<create>>MainView()
+            +updateGameState(gamestate: GameState)
+        }
 }
 
 package controller
@@ -428,6 +433,7 @@ view.ConfigurationScreen ..|> model.game.GameObserver
 view.PlacementScreen ..|> model.game.GameObserver
 view.MainScreen ..|> model.game.GameObserver
 view.EndScreen ..|> model.game.GameObserver
+view.MainView ..|> model.game.GameObserver
 view.TerminalHistory .up.|> .model.player.PlayerObserver
 view.PlacementScreen .up.|> .model.player.PlayerObserver
 view.MainScreen .up.|> .model.player.PlayerObserver
