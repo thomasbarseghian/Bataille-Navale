@@ -1,6 +1,5 @@
 package view;
 
-import model.game.GameObserver;
 
 import javax.swing.*;
 
