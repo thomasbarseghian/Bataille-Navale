@@ -31,5 +31,9 @@ public class ScreenController implements GameObserver {
         }
     }
 
+    @Override
+    public void updateTurnNumber(int turnNumber) {
+
+    }
 
 }
