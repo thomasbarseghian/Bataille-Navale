@@ -1,5 +1,6 @@
 package model.game;
 
 public interface GameObserver {
-    void updateGameState(GameState state);
+    public void updateGameState(GameState gameState);
+    public void updateTurnNumber(int turnNumber);
 }
