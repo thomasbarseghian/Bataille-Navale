@@ -344,8 +344,10 @@ package model
             +updateTurnNumber(turnNumber: Integer)
         }
         class MoveData {
-            -m_position : Integer
-            -m_hit : Boolean
+            -m_position[] : Integer
+            -m_hit[] : Boolean
+            +<<create>> MoveData()
+            +addData(position : Integer, hit : Integer, player : Player, weapon : WeaponType)
         }
     }
 }
@@ -358,8 +360,8 @@ model.game.Game "*" o--> "-m_gameObservers" model.game.GameObserver : > notifies
 model.game.Game "*" o--> "-m_moveHistory" model.game.MoveData : > has been played
 
 'MoveData relations
-model.game.MoveData "1" o--> "-m_player" model.player.Player: > move played by
-model.game.MoveData "1" o--> "-m_weapon" model.PlaceableObject.weapon.WeaponType: > move attacked with
+model.game.MoveData "*" o--> "-m_player" model.player.Player: > move played by
+model.game.MoveData "*" o--> "-m_weapon" model.PlaceableObject.weapon.WeaponType: > move attacked with
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of

@@ -30,6 +30,7 @@ public abstract class Player {
         m_ships = ships;
         m_traps = new ArrayList<>();
         m_weapons = new ArrayList<>();
+        m_observers = new ArrayList<>();
         m_weaponStrategy = new Default();
     }
 
