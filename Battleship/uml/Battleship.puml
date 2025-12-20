@@ -268,6 +268,7 @@ package model
             +notifyAttack(pos : Integer, weapon : Weapon)
             +getName() : String
             +getGrid() : Grid
+            +allShipsAreSunk() : boolean
         }
         class Human extends Player
         {
@@ -320,9 +321,10 @@ package model
         class Game
         {
             -m_turnNumber : Integer
-            -m_currentPlayer" : Integer
+            -m_currentPlayer : Integer
             +<<create>> Game()
             +startGame()
+            +startBattle()
             +nextTurn()
             +checkWin() : Boolean
             +getGameState() : GameState

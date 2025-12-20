@@ -118,4 +118,16 @@ public abstract class Player {
     {
         m_observers.add(observer);
     }
+
+    public boolean allShipsAreSunk()
+    {
+        for (Ship ship : m_ships)
+        {
+            if (ship.getHp() <= 0)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }

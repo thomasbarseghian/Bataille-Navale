@@ -25,6 +25,7 @@ public class Game
         m_turnNumber = 0;
         m_currentPlayer = 0;
         m_state = GameState.CONFIGURATION;
+        m_players = new Player[2];
 
         ShipFactory fac = new ShipFactory();
         ArrayList<Ship> ships1 = new ArrayList<Ship>();
@@ -43,14 +44,44 @@ public class Game
         Grid grid1 = new Grid(10);
         Grid grid2 = new Grid(10);
 
-        Player j1 = new Human("j1", grid1, ships1);
-        Player j2 = new Human("j2", grid2, ships2);
+        Player j1 = new Human("Joueur 1", grid1, ships1);
+        Player j2 = new Human("Joueur 2", grid2, ships2);
         m_players[0] = j1;
         m_players[1] = j2;
 
         m_gameObserver = new ArrayList<GameObserver>();
         m_moveHistory = new MoveData();
+    }
 
+    /**
+     * Lancement du placement
+     * On appelle cette méthode pour commencer le placement
+     */
+    public void startGame()
+    {
+        // Check if the game is currently in the configuration phase
+        if (m_state == GameState.CONFIGURATION)
+        {
+            // Transition to the PLACEMENT state so players can position their ships
+            m_state = GameState.PLACEMENT;
+
+            // Notify the view/observers that the state has changed
+            notifyGameState(m_state);
+        }
+    }
+
+    /**
+     * Lancement du combat
+     * Une fois les bateaux placés, on appelle cette méthode pour commencer le combat
+     */
+    public void startBattle()
+    {
+        if (m_state == GameState.PLACEMENT)
+        {
+            m_state = GameState.PLAYING;
+            notifyGameState(m_state);
+            notifyTurnNumber(m_turnNumber);
+        }
     }
 
     public void nextTurn()
@@ -63,18 +94,34 @@ public class Game
         return m_turnNumber;
     }
 
-    public GameState getState()
+    public GameState getGameState()
     {
         return m_state;
     }
 
     public boolean CheckWin()
     {
-        return false;
+        return m_players[m_currentPlayer].allShipsAreSunk();
     }
 
     public void addObserver(GameObserver observer)
     {
         m_gameObserver.add(observer);
+     }
+
+    public void notifyGameState(GameState gameState)
+    {
+        for (GameObserver observer : m_gameObserver)
+        {
+            observer.updateGameState(gameState);
+        }
+    }
+
+    public void notifyTurnNumber(int turnNumber)
+    {
+        for (GameObserver observer : m_gameObserver)
+        {
+            observer.updateTurnNumber(turnNumber);
+        }
     }
 }
