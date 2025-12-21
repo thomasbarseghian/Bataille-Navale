@@ -14,7 +14,7 @@ Avant de commencer, assurez-vous d’avoir installé les outils suivants :
 
 Pour vérifier l’installation de Java :
 
-```bash
+
 java -version
 
 
