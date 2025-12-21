@@ -76,6 +76,7 @@ public abstract class Player {
     public void addWeapon(Weapon weapon)
     {
         m_weapons.add(weapon);
+        System.out.println(m_name + " a trouvé une arme : " + weapon.getType());
     }
 
     public void addTrap(Trap trap)

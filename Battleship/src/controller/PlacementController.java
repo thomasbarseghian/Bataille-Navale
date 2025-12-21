@@ -2,8 +2,10 @@ package controller;
 
 import model.game.Game;
 import model.grid.Grid;
-import model.placeableObject.ship.*;
+import model.placeableObject.Weapon.Bomb;
 import model.player.Player;
+
+import java.util.ArrayList;
 
 public class PlacementController {
     private Game m_game;
@@ -28,6 +30,24 @@ public class PlacementController {
         if (aiPlayer != null) {
             System.out.println("PlacementController : L'IA place ses bateaux...");
             aiPlayer.placeShipFix(); // Delegate to AI class
+        }
+    }
+    private void placeBonusItems(Grid grid) {
+        // 1. Récupérer toutes les cases de l'île
+        ArrayList<Integer> landTiles = grid.getLandTiles();
+
+        if (!landTiles.isEmpty()) {
+            // 2. Choisir une case au hasard
+            int randomIndex = (int) (Math.random() * landTiles.size());
+            int position = landTiles.get(randomIndex);
+
+            // 3. Créer la bombe et la poser
+            Bomb hiddenBomb = new Bomb();
+            hiddenBomb.setPosition(position);
+
+            grid.putPlaceObjectInTile(hiddenBomb);
+
+            System.out.println("DEBUG: Bombe cachée en position " + position);
         }
     }
 
