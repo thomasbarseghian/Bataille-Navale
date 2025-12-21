@@ -431,7 +431,7 @@ model.game.Game "0..1" --> "-m_winner" model.player.Player : > has winner
 
 'MoveData relations
 model.game.MoveData "*" o--> "-m_player" model.player.Player: > move played by
-model.game.MoveData "*" *--> "-m_weapon" model.placeableObject.weapon.WeaponType: > move attacked with
+model.game.MoveData "*" *--> "-m_weapon" model.placeableObject.weapon.Weapon: > move attacked with
 model.game.MoveData ..> model.placeableObject.weapon.WeaponFactory : <<uses>>
 
 'Grid relations

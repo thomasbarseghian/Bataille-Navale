@@ -27,8 +27,8 @@ public class MainView extends JFrame {
         game.addObserver(placementScreen);
         root.add(placementScreen, "PLACEMENT");
 
-        // --- CHANGEMENT ICI ---
-        // On ne passe plus les joueurs, juste le contrôleur !
+        // --- CHANGE HERE ---
+        // We no longer pass the players, just the controller!
         BattleScreen battleScreen = new BattleScreen(battleCtrl);
         game.addObserver(battleScreen);
         root.add(battleScreen, "PLAYING");

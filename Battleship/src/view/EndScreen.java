@@ -12,7 +12,7 @@ import java.awt.*;
 public class EndScreen extends JPanel implements GameObserver {
 
     private JLabel m_messageLabel;
-    private JLabel m_statsLabel; // NOUVEAU : Label pour les stats
+    private JLabel m_statsLabel; // Label for stats
     private JButton m_restartButton;
     private Game m_game;
 
@@ -21,7 +21,7 @@ public class EndScreen extends JPanel implements GameObserver {
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        // 1. TITRE (Victoire)
+        // 1. TITLE (Victory)
         m_messageLabel = new JLabel("Partie Terminée");
         m_messageLabel.setFont(new Font("Arial", Font.BOLD, 30));
         m_messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -31,16 +31,16 @@ public class EndScreen extends JPanel implements GameObserver {
         gbc.insets = new Insets(0, 0, 20, 0);
         this.add(m_messageLabel, gbc);
 
-        // 2. STATISTIQUES (NOUVEAU)
+        // 2. STATISTICS (NEW)
         m_statsLabel = new JLabel("");
         m_statsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         m_statsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        gbc.gridy = 1; // En dessous du titre
-        gbc.insets = new Insets(0, 0, 30, 0); // Marge avant le bouton
+        gbc.gridy = 1; // Below the title
+        gbc.insets = new Insets(0, 0, 30, 0); // Margin before the button
         this.add(m_statsLabel, gbc);
 
-        // 3. BOUTON REJOUER
+        // 3. REPLAY BUTTON
         m_restartButton = new JButton("Recommencer une partie");
         m_restartButton.setFont(new Font("Arial", Font.PLAIN, 18));
         m_restartButton.setFocusable(false);
@@ -50,7 +50,7 @@ public class EndScreen extends JPanel implements GameObserver {
             m_game.restart();
         });
 
-        gbc.gridy = 2; // Tout en bas
+        gbc.gridy = 2; // At the very bottom
         gbc.insets = new Insets(0, 0, 0, 0);
         this.add(m_restartButton, gbc);
     }
@@ -60,11 +60,11 @@ public class EndScreen extends JPanel implements GameObserver {
         if (state == GameState.END) {
             Player winner = m_game.getWinner();
 
-            // Mise à jour du Titre
+            // Title update
             String winnerName = (winner != null) ? winner.getName() : "Personne";
             m_messageLabel.setText("VICTOIRE DE : " + winnerName.toUpperCase() + " !");
 
-            // Mise à jour des Stats
+            // Stats update
             if (winner != null) {
                 m_statsLabel.setText(generateStatsHTML(winner));
             }
@@ -75,12 +75,12 @@ public class EndScreen extends JPanel implements GameObserver {
     }
 
     /**
-     * Génère le texte des statistiques en HTML pour le JLabel.
+     * Generates the statistics text in HTML for the JLabel.
      */
     private String generateStatsHTML(Player winner) {
         int turns = m_game.getTurnNumber();
 
-        // Calcul des bateaux survivants du vainqueur
+        // Calculation of the winner's surviving ships
         int shipsLeft = 0;
         int totalShips = 0;
         if (winner.getShips() != null) {
@@ -92,7 +92,7 @@ public class EndScreen extends JPanel implements GameObserver {
             }
         }
 
-        // Construction du texte
+        // Text construction
         StringBuilder sb = new StringBuilder();
         sb.append("<html><center>");
         sb.append("<b>Résumé de la partie :</b><br/><br/>");
@@ -100,7 +100,7 @@ public class EndScreen extends JPanel implements GameObserver {
         sb.append("Flotte restante (").append(winner.getName()).append(") : ")
                 .append(shipsLeft).append(" / ").append(totalShips).append(" navires<br/>");
 
-        // Petit message fun selon la performance
+        // Fun little message depending on performance
         if (shipsLeft == totalShips) {
             sb.append("<br/><i>Victoire parfaite ! (Aucun navire coulé)</i>");
         } else if (shipsLeft == 1) {

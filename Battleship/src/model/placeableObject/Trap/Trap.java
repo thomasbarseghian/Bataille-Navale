@@ -7,7 +7,7 @@ public abstract class Trap extends PlaceableObject {
     private TrapType m_trapType;
 
     public Trap(TrapType type) {
-        super(PlaceableObjectType.TRAP); // On dit au parent : "Je suis un TRAP"
+        super(PlaceableObjectType.TRAP);
         this.m_trapType = type;
     }
 

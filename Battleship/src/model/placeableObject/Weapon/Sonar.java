@@ -10,7 +10,7 @@ public class Sonar extends Weapon {
 
     @Override
     public void use(Grid grid, int pos) {
-        // TODO: Implémenter la logique du sonar (C2)
+        // TODO: Implement the sonar logic
 
         notifyFinished();
     }

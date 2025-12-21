@@ -7,8 +7,6 @@ import model.player.Player;
 
 import java.util.ArrayList;
 
-import static model.placeableObject.Weapon.WeaponType.*;
-
 public class MoveData
 {
     ArrayList<Integer> m_position;

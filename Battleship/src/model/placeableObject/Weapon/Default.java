@@ -12,10 +12,10 @@ public class Default extends Weapon{
     @Override
     public void use(Grid grid, int pos)
     {
-        // L'action pure (Gameplay)
+        // The ation (Gameplay)
         grid.hitTile(pos);
 
-        // On signale que l'action est finie
+        // We signal that the action is finished
         notifyFinished();
     }
 }
