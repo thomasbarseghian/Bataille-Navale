@@ -7,7 +7,7 @@ import model.placeableObject.ship.Ship;
 import java.util.ArrayList;
 
 public class Grid {
-    private int  m_size;
+    private int m_size;
     private ArrayList<Tile> m_grid;
     private ArrayList<GridObserver> m_gridObservers;
     public Grid(int size) {
@@ -77,5 +77,54 @@ public class Grid {
 
     public int getSize() {
         return m_size;
+    }
+
+    /**
+     * Checks if the tile at the given position has already been hit.
+     */
+    public boolean isTileHit(int pos) {
+        if (isValidPos(pos)) {
+            return m_grid.get(pos).isHit(); // Appelle la méthode de Tile
+        }
+        return false; // Ou throw exception
+    }
+
+    /**
+     * Checks if the tile is LAND.
+     */
+    public boolean isLand(int pos) {
+        return m_grid.get(pos).getTileType() == TileType.LAND;
+    }
+
+    /**
+     * Retrieves the object on the tile (Ship, Weapon, etc.).
+     */
+    public PlaceableObject getObjectAt(int pos) {
+        if (isValidPos(pos)) {
+            return m_grid.get(pos).getObject();
+        }
+        return null;
+    }
+
+    /**
+     * Marks a tile as hit and notifies observers.
+     */
+    public void setTileHit(int pos) {
+        if (isValidPos(pos)) {
+            Tile tile = m_grid.get(pos);
+
+            // Only notify if the state actually changes or if it's a fresh hit
+            if (!tile.isHit()) {
+                tile.hit(); // Change l'état interne de la Tile
+                notifyTileHit(pos); // La Grid gère la notification (MVC)
+            }
+        }
+    }
+
+    // --- HELPER ---
+
+    // Sécurité pour éviter les IndexOutOfBoundsException
+    private boolean isValidPos(int pos) {
+        return pos >= 0 && pos < m_size * m_size;
     }
 }
