@@ -1,10 +1,8 @@
 package view;
 
-import controller.ConfigController;
-import controller.BattleController;
-import controller.PlacementController;
+import controller.*;
 import model.game.Game;
-import model.grid.Grid;
+import model.player.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,33 +11,35 @@ public class MainView extends JFrame {
     private CardLayout cardLayout;
     private JPanel root;
 
-    // J'ai ajouté Grid et Game aux paramètres pour pouvoir créer les écrans correctement
-    public MainView(ConfigController configController, PlacementController placementController, BattleController battleController, Grid humanGrid, Game game) {
+    public MainView(ConfigController configCtrl,
+                    PlacementController placementCtrl,
+                    BattleController battleCtrl, // We still need this
+                    Player humanPlayer,
+                    Player aiPlayer,
+                    Game game) {
+
         this.cardLayout = new CardLayout();
         this.root = new JPanel(cardLayout);
 
-        // 1. Écran de Configuration
-        root.add(new ConfigurationScreen(configController), "CONFIG");
+        root.add(new ConfigurationScreen(configCtrl), "CONFIG");
 
-        // 2. Écran de Placement
-        // On crée l'écran
-        PlacementScreen placementScreen = new PlacementScreen(placementController, humanGrid);
-        // IMPORTANT : On abonne l'écran au jeu pour qu'il sache quand le placement commence
+        PlacementScreen placementScreen = new PlacementScreen(placementCtrl, humanPlayer.getGrid());
         game.addObserver(placementScreen);
-        // On l'ajoute au panel
         root.add(placementScreen, "PLACEMENT");
 
-        // 3. Écran de Jeu (Vide pour l'instant pour éviter les erreurs)
-        root.add(new JPanel(), "PLAYING");
+        // --- CHANGEMENT ICI ---
+        // On ne passe plus les joueurs, juste le contrôleur !
+        BattleScreen battleScreen = new BattleScreen(battleCtrl);
+        game.addObserver(battleScreen);
+        root.add(battleScreen, "PLAYING");
+        // ----------------------
 
-        // 4. Écran de Fin (Vide pour l'instant)
         root.add(new JPanel(), "END");
 
-        // Configuration de la fenêtre
         this.setContentPane(root);
-        this.setSize(900, 700);
+        this.setSize(1000, 750);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null); // Centre la fenêtre
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 

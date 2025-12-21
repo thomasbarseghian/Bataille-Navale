@@ -2,12 +2,14 @@ package controller;
 
 import model.placeableObject.Weapon.WeaponType;
 import model.player.Player;
+import model.game.Game;
 
 public class GameController {
 
     private HumanController m_humanController;
     private AIController m_aiController;
     private Player m_currentPlayer;
+    private Game m_game;
 
     public GameController(HumanController player, AIController ai) {
         this.m_humanController = player;
@@ -15,7 +17,9 @@ public class GameController {
         // Au début, c'est le tour du joueur humain
         this.m_currentPlayer = m_humanController.getPlayer();
     }
-
+    public void setGame(Game game) {
+        this.m_game = game;
+    }
     /**
      * Called by the HumanController (via the WeaponCallback) when the player's action is fully complete.
      */
@@ -71,5 +75,10 @@ public class GameController {
 
         // The Player attacks with the equipped weapon
         m_currentPlayer.attack(targetPlayer, pos);
+    }
+    public void notifyAttackResult(Player attacker, int pos, WeaponType weapon, boolean isHit) {
+        if (m_game != null) {
+            m_game.recordMove(attacker, pos, weapon, isHit);
+        }
     }
 }

@@ -25,12 +25,12 @@ public class AI extends Player
 
         currentShip = m_ships.get(1);
         currentShip.setDirection(HORIZONTAL);
-        currentShip.setPosition(34);
+        currentShip.setPosition(24);
         m_grid.putPlaceObjectInTile(currentShip);
 
         currentShip = m_ships.get(2);
         currentShip.setDirection(VERTICAL);
-        currentShip.setPosition(59);
+        currentShip.setPosition(0);
         m_grid.putPlaceObjectInTile(currentShip);
 
         currentShip = m_ships.get(3);
