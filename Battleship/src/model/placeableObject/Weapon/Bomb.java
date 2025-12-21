@@ -16,4 +16,10 @@ public class Bomb extends Weapon {
 
         notifyFinished();
     }
+
+    @Override
+    public WeaponType getType()
+    {
+        return WeaponType.BOMB;
+    }
 }

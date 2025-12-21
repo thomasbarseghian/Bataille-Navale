@@ -14,4 +14,10 @@ public class Sonar extends Weapon {
 
         notifyFinished();
     }
+
+    @Override
+    public WeaponType getType()
+    {
+        return WeaponType.SONAR;
+    }
 }
