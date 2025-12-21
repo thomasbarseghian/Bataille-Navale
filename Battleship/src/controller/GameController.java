@@ -3,6 +3,7 @@ package controller;
 import model.game.Game;
 import model.placeableObject.Weapon.WeaponType;
 import model.player.Player;
+import controller.TurnObserver;
 
 public class GameController implements TurnObserver {
 
@@ -15,6 +16,8 @@ public class GameController implements TurnObserver {
         this.m_game = game;
         this.m_humanController = player;
         this.m_aiController = ai;
+        this.m_humanController.setGameController(this);
+        this.m_aiController.setGameController(this);
         // Au début, c'est le tour du joueur humain
         // GameController subscribes to both sub-controllers
         this.m_humanController.addObserver(this);

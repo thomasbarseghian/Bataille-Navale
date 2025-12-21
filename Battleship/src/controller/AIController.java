@@ -6,11 +6,14 @@ import model.placeableObject.Weapon.WeaponType;
 import model.player.Player;
 
 public class AIController extends AbstractPlayerController {
-
     private Player m_opponent; // The AI needs to know who to attack
+    private GameController m_gameController;
 
     public void setOpponent(Player opponent) {
         this.m_opponent = opponent;
+    }
+    public void setGameController(GameController gameController) {
+        this.m_gameController = gameController;
     }
 
     /**
@@ -19,7 +22,6 @@ public class AIController extends AbstractPlayerController {
      */
     @Override
     public void startTurn() {
-
         Grid opponentGrid = m_opponent.getGrid();
         int targetPos;
         int maxAttempts = 1000; // Safety break to avoid infinite loops if board is full
@@ -44,12 +46,16 @@ public class AIController extends AbstractPlayerController {
         } else {
             m_player.equipWeapon(WeaponType.DEFAULT);
         }
-
         // --- EXECUTION ---
+        boolean isHit = (opponentGrid.getObjectAt(targetPos) != null);
         Weapon currentWeapon = m_player.getWeaponStrategy();
         currentWeapon.setCallback(this);
 
         // Perform the attack on the valid targetPos found above
         m_player.attack(m_opponent, targetPos);
+
+        if (m_gameController != null) {
+            m_gameController.notifyAttackResult(m_player, targetPos, currentWeapon.getType(), isHit);
+        }
     }
 }
