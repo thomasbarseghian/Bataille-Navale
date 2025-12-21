@@ -193,4 +193,14 @@ public abstract class Player {
 
     public ArrayList<Ship> getShips() { return m_ships;
     }
+    public void reset() {
+        m_grid.reset();
+
+        for (Ship s : m_ships) {
+            s.reset();
+        }
+
+        m_weaponStrategy = new Default();
+        m_weapons.clear();
+    }
 }

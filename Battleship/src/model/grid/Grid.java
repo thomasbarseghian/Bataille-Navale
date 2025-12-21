@@ -148,4 +148,13 @@ public class Grid {
     private boolean isValidPos(int pos) {
         return pos >= 0 && pos < m_size * m_size;
     }
+    public void reset() {
+        for (Tile tile : m_grid) {
+            tile.reset();
+        }
+        // Important : On prévient la vue que tout est vide (pour effacer les couleurs)
+        for (int i = 0; i < m_size * m_size; i++) {
+            notifyTileHit(i); //do this in order to refresh the view
+        }
+    }
 }

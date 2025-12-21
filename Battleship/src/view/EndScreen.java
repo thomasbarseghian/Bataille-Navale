@@ -10,15 +10,32 @@ import java.awt.*;
 public class EndScreen extends JPanel implements GameObserver {
 
     private JLabel m_messageLabel;
+    private JButton m_restartButton;
     private Game m_game;
 
     public EndScreen(Game game) {
         this.m_game = game;
-        this.setLayout(new GridBagLayout()); // Center everything
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
+        // Label Victoire
         m_messageLabel = new JLabel("Partie Terminée");
         m_messageLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        this.add(m_messageLabel);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 20, 0);
+        this.add(m_messageLabel, gbc);
+
+        // Bouton restart
+        m_restartButton = new JButton("Recommencer le Jeu");
+        m_restartButton.setFont(new Font("Arial", Font.PLAIN, 20));
+        m_restartButton.setFocusable(false);
+        m_restartButton.addActionListener(e -> {
+            m_game.restart();
+        });
+
+        gbc.gridy = 1;
+        this.add(m_restartButton, gbc);
     }
 
     @Override
