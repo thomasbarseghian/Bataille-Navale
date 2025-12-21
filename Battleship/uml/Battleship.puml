@@ -15,38 +15,53 @@ package view
 
         class ConfigurationScreen
         {
-            +<<create>>ConfigurationScreen()
+            +<<create>>ConfigurationScreen(controller : ConfigController)
+            -handleStartPlacement()
+            -initComponents()
         }
 
         class PlacementScreen
         {
-            +<<create>>PlacementScreen()
-            +updateShipPlaced(ship : Ship)
-            +updateTrapPlaced(trap : Trap)
-            +updateWeaponPlaced(weapon : Weapon)
+            +<<create>>PlacementScreen(controller : PlacementController, playerGrid : Grid)
+            +updateGameState(state : GameState)
+            +updateTurnNumber(turnNumber : Integer)
+            +updateHistory(logMessage : String)
         }
 
-        class MainScreen
+        class BattleScreen
         {
-            +<<create>>MainScreen()
-            +updateTrapPlaced(trap : Trap)
-            +updateAttack(pos : Integer, weapon : Weapon)
-            +updateEffectApplied(effect : Effects)
-            +updateNumberOfShips(numberOfShips: Integer)
-            +updateTurnNumber(turnNumber: Integer)
-            +updateTileHit(pos: Integer)
+            +<<create>>BattleScreen(controller : BattleController)
+            -selectWeapon(type : WeaponType)
+            -updateWeaponLabel(type : WeaponType)
+            -updateStats()
+            +updateGameState(state : GameState)
+            +updateTurnNumber(turnNumber : Integer)
+            +updateHistory(logMessage : String)
         }
 
         class EndScreen
         {
-            +<<create>>EndScreen()
-            +updateTurnNumber(turnNumber: Integer)
-            +updateTileHit(pos: Integer)
+            +<<create>>EndScreen(game : Game)
+            +updateGameState(state : GameState)
+            +updateTurnNumber(turnNumber : Integer)
+            +updateHistory(logMessage : String)
+            -generateStatsHTML(winner : Player) : String
         }
         class MainView
         {
-            +<<create>>MainView()
-            +updateGameState(gamestate: GameState)
+            +<<create>>MainView(config : ConfigController, place : PlacementController, battle : BattleController, human : Player, ai : Player, game : Game)
+            +showScreen(name : String)
+        }
+        class GridPanel
+        {
+            -m_hideShips : Boolean
+            -m_size : Integer
+            +<<create>>GridPanel(grid : Grid, hideShips : Boolean)
+            -initLayout()
+            +refreshGrid()
+            -updateSingleTile(pos : Integer)
+            +addInteractionListener(listener : Object)
+            +updateTileHit(pos : Integer)
         }
 }
 
@@ -54,22 +69,36 @@ package controller
 {
     class ScreenController implements .model.game.GameObserver
     {
-        +updateGameState(gamestate: GameState)
+        +<<create>>ScreenController(view : MainView, game : Game)
+        +updateGameState(state : GameState)
+        +updateTurnNumber(turnNumber : Integer)
+        +updateHistory(logMessage : String)
     }
     class BattleController
     {
-
+        +<<create>>BattleController(humanLogic : HumanController, aiPlayer : Player)
+        +onEnemyGridClicked(position : Integer)
+        +onWeaponSelected(type : WeaponType) : Boolean
+        +getHumanGrid() : Grid
+        +getAiGrid() : Grid
+        +getHumanStatsText() : String
+        +getAiStatsText() : String
+        -generateStatsHTML(p : Player, title : String) : String
     }
     class PlacementController
     {
-
+        +<<create>>PlacementController(game : Game)
+        +placeShipsFixed()
+        -placeBonusItems(grid : Grid)
+        +startGame()
     }
     class ConfigController
     {
-
+        +<<create>>ConfigController(gameModel : Game)
+        +applyConfiguration()
     }
 
-    class HumanController
+    class HumanController extends WeaponCallback
     {
         +setGameController(gameController : GameController)
         +setPlayer(p : Player)
@@ -79,10 +108,10 @@ package controller
         +handleWeaponEquip(weaponType : WeaponType)
         +onAttackFinished()
     }
-    class AIController
+    class AIController extends WeaponCallback
     {
         +setGameController(gameController : GameController)
-        +setPlayers(aiPlayer : Player, humanPlayer : Player)
+        +setOpponent(opponent : Player)
         +getPlayer() : Player
         +startTurn()
         +onAttackFinished()
@@ -93,13 +122,26 @@ package controller
     }
 
     abstract class AbstractPlayerController <<abstract>>{
-        # m_player : Player
-        # m_observers : List<TurnObserver>
-        + addObserver(TurnObserver)
-        + removeObserver(TurnObserver)
+        +<<create>>AbstractPlayerController()
+        +setPlayer(player : Player)
+        +getPlayer() : Player
+        +addObserver(observer : TurnObserver)
+        +removeObserver(observer : TurnObserver)
         # notifyTurnEnded()
         + onAttackFinished()
         {abstract} + startTurn()
+    }
+    class GameController
+    {
+        +<<create>>GameController(game : Game, player : HumanController, ai : AIController)
+        +setGame(game : Game)
+        +onTurnEnded(playerWhoFinished : Player)
+        -endHumanTurn()
+        -endAiTurn()
+        +onSpecialWeaponClicked(type : WeaponType)
+        +onBombButtonClicked()
+        +onTileClick(pos : Integer, targetPlayer : Player)
+        +notifyAttackResult(attacker : Player, pos : Integer, weapon : WeaponType, isHit : Boolean)
     }
 }
 
@@ -112,16 +154,19 @@ package model
             -m_size : Integer
             +<<create>>Grid(size : Integer)
             +hitTile(pos:Integer)
-            +placeObject(object : PlaceableObject) : Boolean
+            +putPlaceObjectInTile(object : PlaceableObject)
             +attackAt(pos : Integer, Weapon weapon) : PlaceableObject
             +addObserver(obs : GridObserver)
             +notifyTileHit(pos : Integer)
             +getTile(pos : Integer) : Tile
+            +getSize() : Integer
             +isTileHit(pos : Integer) : Boolean
             +isLand(pos : Integer) : Boolean
             +getObjectAt(pos : Integer) : PlaceableObject
             +setTileHit(pos : Integer)
-            +isValidPos(pos : Integer)
+            -isValidPos(pos : Integer) : Boolean
+            +reset()
+            +getLandTiles() : Integer[*]
         }
 
         interface GridObserver <<interface>>
@@ -133,12 +178,14 @@ package model
         {
             -m_isHit : Boolean
             +<<create>>Tile(type : TileType)
-            +getObject() : PlaceableObject
-            +getTileType() : TileType
-            +isHit() : Boolean
-            +setObject(object : PlaceableObject)
             +hit()
+            +isHit() : Boolean
             +isLand() : Boolean
+            +getTileType() : TileType
+            +getObject() : PlaceableObject
+            +setObject(object : PlaceableObject)
+            +isEmpty() : Boolean
+            +reset()
         }
         enum TileType
         {
@@ -151,7 +198,8 @@ package model
         abstract PlaceableObject <<abstract>>
         {
             -m_position : Integer
-            +getPosition()
+            +<<create>>PlaceableObject(type : PlaceableObjectType)
+            +getPosition() : Integer
             +setPosition(pos:Integer)
             +getObjectType():PlaceableObjectType
         }
@@ -166,12 +214,14 @@ package model
         {
             class Trap <<abstract>> implements model.placeableObject.PlaceableObject
             {
-                +<<create>>Trap()
+                +<<create>>Trap(type : TrapType)
                 +activate(opponentGrid : Grid)
+                +getTrapType() : TrapType
             }
 
             interface TrapFactory
             {
+                +<<create>>TrapFactory()
                 +createTrap(trapType : TrapType) : Trap
             }
 
@@ -214,30 +264,32 @@ package model
                 +hit()
                 +getAllPositions():Integer[*]
                 'We will only know the direction when placing the boat not during the creation
+                +reset()
             }
             interface ShipFactory
             {
+                +<<create>> ShipFactory()
                 +createShip(shipType : ShipType) : Ship
             }
             class AircraftCarrier extends Ship
             {
-                +<<create>> AircraftCarrier()
+                +<<create>> AircraftCarrier(size : Integer, type : ShipType)
             }
             class Cruiser extends Ship
             {
-                +<<create>> Cruiser()
+                +<<create>> Cruiser(size : Integer, type : ShipType)
             }
             class Destroyer extends Ship
             {
-                +<<create>> Destroyer()
+                +<<create>> Destroyer(size : Integer, type : ShipType)
             }
             class Submarine extends Ship
             {
-                +<<create>> Submarine()
+                +<<create>> Submarine(size : Integer, type : ShipType)
             }
             class TorpedoBoat extends Ship
             {
-                +<<create>> TorpedoBoat()
+                +<<create>> TorpedoBoat(size : Integer, type : ShipType)
             }
             enum ShipType
             {
@@ -258,7 +310,6 @@ package model
             class Weapon <<abstract>> extends model.placeableObject.PlaceableObject
             {
                 +<<create>>Weapon(type : WeaponType)
-                +use(opponentGrid : Grid, pos : Integer)
                 {abstract} +use(grid : Grid, pos : Integer)
                 +setCallback(callback : WeaponCallback)
                 +notifyFinished()
@@ -266,28 +317,29 @@ package model
             }
             interface WeaponFactory
             {
+                +<<create>>WeaponFactory()
                 +createWeapon(weaponType : WeaponType) : Weapon
             }
             class Default extends Weapon
             {
                 +<<create>>Default()
-                +use(opponentGrid : Grid, pos : Integer) : Boolean
+                +use(opponentGrid : Grid, pos : Integer)
             }
             class Bomb extends Weapon
             {
                 +<<create>>Bomb()
                 +getType() : WeaponType
-                +use(opponentGrid : Grid, pos : Integer) : Boolean
-                +isInsideGrid(x : Integer, y : Integer, size : Integer) : Boolean
+                +use(grid : Grid, centerPos : Integer)
+                -isInsideGrid(x : Integer, y : Integer, size : Integer) : Boolean
             }
             class Sonar extends Weapon
             {
                 +<<create>>Sonar()
-                +use(opponentGrid : Grid, pos : Integer) : Booolean
+                +use(grid : Grid, pos : Integer)
             }
             enum WeaponType
             {
-                MISSILE
+                DEFAULT
                 BOMB
                 SONAR
             }
@@ -299,9 +351,9 @@ package model
         {
             #m_name : String
             #m_isTornadoed : Boolean
-            +<<create>>Player(name : String, grid : Grid)
+            +<<create>>Player(name : String, grid : Grid, ships : Ship[*])
             +placeObject(object : PlaceableObject)
-            +placeShipFix()
+            {abstract} +placeShipFix()
             +placeShipRandom()
             +placeTrapFix()
             +placeTrapRandom()
@@ -320,12 +372,14 @@ package model
             +getName() : String
             +getGrid() : Grid
             +getWeaponStrategy() : Weapon
-            +allShipsAreSunk() : boolean
+            +allShipsAreSunk() : Boolean
+            +getShips() : Ship[*]
+            +reset()
         }
         class Human extends Player
         {
-            +<<create>>Human(grid : Grid)
-            +placeFix()
+            +<<create>>Human(name : String, grid : Grid, ships : Ship[*])
+            +placeShipFix()
             +placeBoatCustom(pos : Integer, ship : Ship)
             +placeTrapCustom(pos : Integer, trap : Trap)
             +placeWeaponCustom(pos : Integer, weapon : Weapon)
@@ -340,8 +394,8 @@ package model
         }
         class AI extends Player
         {
-            +<<create>>AI(grid : Grid)
-            +placeBoatFix()
+            +<<create>>AI(name : String, grid : Grid, ships : Ship[*])
+            +placeShipFix()
             +placeTrapFix()
             +setWeaponStrategy(weapon : Weapon)
             +addWeapon(weapon : Weapon)
@@ -435,21 +489,21 @@ model.game.MoveData "*" *--> "-m_weapon" model.placeableObject.weapon.Weapon: > 
 model.game.MoveData ..> model.placeableObject.weapon.WeaponFactory : <<uses>>
 
 'Grid relations
-model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
+model.grid.Grid "1" *--> "-m_grid" model.grid.Tile : > is made of
 model.grid.Grid "*" o--> "-m_gridObservers" model.grid.GridObserver : > notify
 
 'Tile relations
-model.grid.Tile "1" *--> "-m_object" model.placeableObject.PlaceableObject: > has elements of the type
+model.grid.Tile "0..1" *--> "-m_object" model.placeableObject.PlaceableObject: > has elements of the type
 model.grid.Tile "1" *->  "-m_tileType" model.grid.TileType : > is of the type\t
 
 'Ship relations
-model.placeableObject.ship.Ship "1" o--> "-m_shipTyрe" model.placeableObject.ship.ShipType: > is of the type
-model.placeableObject.ship.Ship "1" o--> "-m_direction" model.placeableObject.ship.Direction: > is in this direction
+model.placeableObject.ship.Ship "1" *--> "-m_shipType" model.placeableObject.ship.ShipType: > is of the type
+model.placeableObject.ship.Ship "1" *--> "-m_direction" model.placeableObject.ship.Direction: > is in this direction
 
 'Weapon relations
 model.placeableObject.weapon.Weapon ..> model.grid.Grid : <<uses>>
 model.placeableObject.weapon.Weapon "1" *->  "-m_weaponType" model.placeableObject.weapon.Weapon : > is of the type\t
-model.placeableObject.weapon.Weapon "1" *->  "-m_callback" model.game.WeaponCallback : > calls back\t
+model.placeableObject.weapon.Weapon "0..1" o->  "#m_callback" model.game.WeaponCallback : > calls back\t
 
 'Trap relations
 model.placeableObject.trap.Trap "1" *->  "-m_trapType" model.placeableObject.trap.TrapType : > is of the type
@@ -470,55 +524,48 @@ model.player.Player "*" *--> "#m_weapons" model.placeableObject.weapon.Weapon : 
 model.player.Player "1" o--> "#m_weaponStrategy" model.placeableObject.weapon.Weapon : > uses the strategy
 model.player.Player "1..*" o--> "#m_observers" model.player.PlayerObserver : > notifies changes
 model.player.Player ..> model.placeableObject.weapon.WeaponType : <<uses>>
+model.player.Player ..> model.placeableObject.PlaceableObject : <<uses>>
 
 'AI relations
 model.player.difficulty .> model.player.AI : <<uses>>
 
 'ShipFactory relations
-model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Ship : <<uses>>
+model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Ship : <<creates>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Submarine : <<instantiate>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.TorpedoBoat : <<instantiate>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Cruiser : <<instantiate>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Destroyer : <<instantiate>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.AircraftCarrier : <<instantiate>>
+model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.ShipType : <<uses>>
 
 'WeaponFactory relations
-model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Weapon : <<uses>>
+model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Weapon : <<creates>>
 model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Bomb : <<instantiate>>
 model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Sonar : <<instantiate>>
 model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Default : <<instantiate>>
+model.placeableObject.weapon.WeaponFactory ..> model.placeableObject.weapon.WeaponType : <<uses>>
 
 'TrapFactory relations
 model.placeableObject.trap.TrapFactory .> model.placeableObject.trap.Trap : <<uses>>
 model.placeableObject.trap.TrapFactory .> model.placeableObject.trap.Blackhole : <<instantiate>>
 model.placeableObject.trap.TrapFactory .> model.placeableObject.trap.Tornado : <<instantiate>>
+model.placeableObject.trap.TrapFactory ..> model.placeableObject.trap.TrapType : <<uses>>
 
 ' EndScreen also observes the gird
 EndScreen ..|> model.grid.GridObserver
 MainScreen ..|> model.grid.GridObserver
-
-' View relations
-
-view.ConfigurationScreen ..|> model.game.GameObserver
-view.PlacementScreen ..|> model.game.GameObserver
-view.MainScreen ..|> model.game.GameObserver
-view.EndScreen ..|> model.game.GameObserver
-view.MainView ..|> model.game.GameObserver
-view.TerminalHistory .up.|> .model.player.PlayerObserver
-view.PlacementScreen .up.|> .model.player.PlayerObserver
-view.MainScreen .up.|> .model.player.PlayerObserver
-view.EndScreen .up.|> .model.player.PlayerObserver
 
 'Controller relations
 
 'AbstractPlayerController relations
 controller.AbstractPlayerController ..|> model.game.WeaponCallback
 controller.AbstractPlayerController o--> "0..*" controller.TurnObserver : > notifies
+controller.AbstractPlayerController "1" o--> "#m_player" model.player.Player : > controls
+controller.AbstractPlayerController "*" o--> "#m_observers" controller.TurnObserver : > notifies
 
 'AIController relations
 controller.AIController --|> controller.AbstractPlayerController
 controller.AIController "1" o--> "-gameController" controller.GameController : > notifies end of turn
-controller.AIController "1" o--> "-m_ai" model.player.Player : > controls
 controller.AIController "1" o--> "-m_opponent" model.player.Player : > targets
 controller.AIController ..> model.placeableObject.weapon.Weapon : <<uses>>
 controller.AIController ..> model.placeableObject.weapon.WeaponType : <<uses>>
@@ -527,7 +574,6 @@ controller.AIController ..> model.placeableObject.weapon.WeaponType : <<uses>>
 'HumanController relations
 controller.HumanController --|> controller.AbstractPlayerController
 controller.HumanController "1" o--> "-gameController" controller.GameController : > notifies end of turn
-controller.HumanController "1" o--> "-m_player" model.player.Player : > controls
 controller.HumanController ..> model.placeableObject.weapon.Weapon : <<uses>>
 controller.HumanController ..> model.placeableObject.weapon.WeaponType : <<uses>>
 
@@ -538,4 +584,48 @@ controller.GameController "1" o--> "-m_aiController" controller.AIController : >
 controller.GameController "1" o--> "-m_currentPlayer" model.player.Player : > tracks active player
 controller.GameController ..> model.placeableObject.weapon.WeaponType : <<uses>>
 controller.GameController "1" o--> "-m_game" model.game.Game : > is the active game
+controller.GameController ..> model.placeableObject.weapon.WeaponType : <<uses>>
+
+'BattleController relations
+controller.BattleController "1" o--> "-m_humanLogic" controller.HumanController : > delegates to
+controller.BattleController "1" o--> "-m_aiPlayer" model.player.Player : > targets
+
+'ConfigController relations
+controller.ConfigController "1" o--> "-gameModel" model.game.Game : > configures
+
+'PlacementController relations
+controller.PlacementController "1" o--> "-m_game" model.game.Game : > manages
+' Dépendance car il fait "new Bomb()"
+controller.PlacementController ..> model.placeableObject.weapon.Bomb : <<instantiates>>
+
+'ScreenController relations
+controller.ScreenController ..|> model.game.GameObserver
+controller.ScreenController "1" o--> "-m_view" view.MainView : > updates
+controller.ScreenController "1" o--> "-m_game" model.game.Game : > observes
+
+'View relations
+
+'Dependencies and Relations
+view.MainView "1" o--> "-configScreen" view.ConfigurationScreen : > manages
+view.MainView "1" o--> "-placementScreen" view.PlacementScreen : > manages
+view.MainView "1" o--> "-battleScreen" view.BattleScreen : > manages
+view.MainView "1" o--> "-endScreen" view.EndScreen : > manages
+
+view.ConfigurationScreen "1" o--> "-controller" controller.ConfigController : > uses
+
+view.PlacementScreen "1" o--> "-m_controller" controller.PlacementController : > uses
+view.PlacementScreen "1" o--> "-m_gridPanel" view.GridPanel : > contains
+view.PlacementScreen ..|> model.game.GameObserver
+
+view.BattleScreen "1" o--> "-m_controller" controller.BattleController : > uses
+view.BattleScreen "1" o--> "-m_playerGridPanel" view.GridPanel : > contains
+view.BattleScreen "1" o--> "-m_enemyGridPanel" view.GridPanel : > contains
+view.BattleScreen ..|> model.game.GameObserver
+
+view.EndScreen "1" o--> "-m_game" model.game.Game : > uses
+view.EndScreen ..|> model.game.GameObserver
+
+view.GridPanel "1" o--> "-m_gridModel" model.grid.Grid : > displays
+view.GridPanel ..|> model.grid.GridObserver
+
 @enduml
