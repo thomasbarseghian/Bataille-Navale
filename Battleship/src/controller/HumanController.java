@@ -12,8 +12,7 @@ public class HumanController extends AbstractPlayerController {
      */
     @Override
     public void startTurn() {
-        // Logic to unlock the UI (View)
-        // e.g., view.enableInteraction(true);
+        // Logic to unlock the UI (View) can be added here if needed
     }
 
     /**
@@ -33,15 +32,11 @@ public class HumanController extends AbstractPlayerController {
     }
 
     /**
-     * Specific method for Human: Triggered by UI click on Weapon Button.
+     * Optional wrapper if you want to encapsulate logic,
+     * currently BattleController calls m_player.equipWeapon() directly via getPlayer().
      */
     public void handleWeaponEquip(WeaponType weaponType) {
-        boolean equipped = m_player.equipWeapon(weaponType);
-
-        if (equipped) {
-            // met à jour vue
-        } else {
-            // met à jour vue
-        }
+        // Not used directly in the new logic, but kept for compatibility
+        m_player.equipWeapon(weaponType);
     }
 }
