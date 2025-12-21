@@ -44,7 +44,7 @@ public class EndScreen extends JPanel implements GameObserver {
         m_restartButton = new JButton("Recommencer une partie");
         m_restartButton.setFont(new Font("Arial", Font.PLAIN, 18));
         m_restartButton.setFocusable(false);
-        m_restartButton.setPreferredSize(new Dimension(250, 50));
+        m_restartButton.setPreferredSize(new Dimension(350, 50));
 
         m_restartButton.addActionListener(e -> {
             m_game.restart();
