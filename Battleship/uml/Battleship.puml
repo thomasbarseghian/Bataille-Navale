@@ -15,38 +15,53 @@ package view
 
         class ConfigurationScreen
         {
-            +<<create>>ConfigurationScreen()
+            +<<create>>ConfigurationScreen(controller : ConfigController)
+            -handleStartPlacement()
+            -initComponents()
         }
 
         class PlacementScreen
         {
-            +<<create>>PlacementScreen()
-            +updateShipPlaced(ship : Ship)
-            +updateTrapPlaced(trap : Trap)
-            +updateWeaponPlaced(weapon : Weapon)
+            +<<create>>PlacementScreen(controller : PlacementController, playerGrid : Grid)
+            +updateGameState(state : GameState)
+            +updateTurnNumber(turnNumber : Integer)
+            +updateHistory(logMessage : String)
         }
 
-        class MainScreen
+        class BattleScreen
         {
-            +<<create>>MainScreen()
-            +updateTrapPlaced(trap : Trap)
-            +updateAttack(pos : Integer, weapon : Weapon)
-            +updateEffectApplied(effect : Effects)
-            +updateNumberOfShips(numberOfShips: Integer)
-            +updateTurnNumber(turnNumber: Integer)
-            +updateTileHit(pos: Integer)
+            +<<create>>BattleScreen(controller : BattleController)
+            -selectWeapon(type : WeaponType)
+            -updateWeaponLabel(type : WeaponType)
+            -updateStats()
+            +updateGameState(state : GameState)
+            +updateTurnNumber(turnNumber : Integer)
+            +updateHistory(logMessage : String)
         }
 
         class EndScreen
         {
-            +<<create>>EndScreen()
-            +updateTurnNumber(turnNumber: Integer)
-            +updateTileHit(pos: Integer)
+            +<<create>>EndScreen(game : Game)
+            +updateGameState(state : GameState)
+            +updateTurnNumber(turnNumber : Integer)
+            +updateHistory(logMessage : String)
+            -generateStatsHTML(winner : Player) : String
         }
         class MainView
         {
-            +<<create>>MainView()
-            +updateGameState(gamestate: GameState)
+            +<<create>>MainView(config : ConfigController, place : PlacementController, battle : BattleController, human : Player, ai : Player, game : Game)
+            +showScreen(name : String)
+        }
+        class GridPanel
+        {
+            -m_hideShips : Boolean
+            -m_size : Integer
+            +<<create>>GridPanel(grid : Grid, hideShips : Boolean)
+            -initLayout()
+            +refreshGrid()
+            -updateSingleTile(pos : Integer)
+            +addInteractionListener(listener : Object)
+            +updateTileHit(pos : Integer)
         }
 }
 
@@ -540,18 +555,6 @@ model.placeableObject.trap.TrapFactory ..> model.placeableObject.trap.TrapType :
 EndScreen ..|> model.grid.GridObserver
 MainScreen ..|> model.grid.GridObserver
 
-' View relations
-
-view.ConfigurationScreen ..|> model.game.GameObserver
-view.PlacementScreen ..|> model.game.GameObserver
-view.MainScreen ..|> model.game.GameObserver
-view.EndScreen ..|> model.game.GameObserver
-view.MainView ..|> model.game.GameObserver
-view.TerminalHistory .up.|> .model.player.PlayerObserver
-view.PlacementScreen .up.|> .model.player.PlayerObserver
-view.MainScreen .up.|> .model.player.PlayerObserver
-view.EndScreen .up.|> .model.player.PlayerObserver
-
 'Controller relations
 
 'AbstractPlayerController relations
@@ -599,4 +602,30 @@ controller.PlacementController ..> model.placeableObject.weapon.Bomb : <<instant
 controller.ScreenController ..|> model.game.GameObserver
 controller.ScreenController "1" o--> "-m_view" view.MainView : > updates
 controller.ScreenController "1" o--> "-m_game" model.game.Game : > observes
+
+'View relations
+
+'Dependencies and Relations
+view.MainView "1" o--> "-configScreen" view.ConfigurationScreen : > manages
+view.MainView "1" o--> "-placementScreen" view.PlacementScreen : > manages
+view.MainView "1" o--> "-battleScreen" view.BattleScreen : > manages
+view.MainView "1" o--> "-endScreen" view.EndScreen : > manages
+
+view.ConfigurationScreen "1" o--> "-controller" controller.ConfigController : > uses
+
+view.PlacementScreen "1" o--> "-m_controller" controller.PlacementController : > uses
+view.PlacementScreen "1" o--> "-m_gridPanel" view.GridPanel : > contains
+view.PlacementScreen ..|> model.game.GameObserver
+
+view.BattleScreen "1" o--> "-m_controller" controller.BattleController : > uses
+view.BattleScreen "1" o--> "-m_playerGridPanel" view.GridPanel : > contains
+view.BattleScreen "1" o--> "-m_enemyGridPanel" view.GridPanel : > contains
+view.BattleScreen ..|> model.game.GameObserver
+
+view.EndScreen "1" o--> "-m_game" model.game.Game : > uses
+view.EndScreen ..|> model.game.GameObserver
+
+view.GridPanel "1" o--> "-m_gridModel" model.grid.Grid : > displays
+view.GridPanel ..|> model.grid.GridObserver
+
 @enduml
