@@ -74,7 +74,7 @@ public class GridPanel extends JPanel implements GridObserver {
         Tile tile = m_gridModel.getTile(pos);
         JButton btn = m_buttons.get(pos);
 
-        boolean isHit = tile.getIsHit();
+        boolean isHit = tile.isHit();
         boolean hasObject = (tile.getObject() != null);
         TileType type = tile.getTileType(); // <--- ON RECUPÈRE LE TYPE ICI
 

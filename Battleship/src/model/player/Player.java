@@ -84,37 +84,64 @@ public abstract class Player {
         m_traps.add(trap);
     }
 
-    public void setIsTornadoed(boolean isAffected)
-    {
-        m_isTornadoed = isAffected;
-    }
+    //public void setIsTornadoed(boolean isAffected)
+    //{
+    //    m_isTornadoed = isAffected;
+    //}
 
-    public void attack(Player opponent, int pos)
-    {
+    public void attack(Player opponent, int pos) {
         Grid opponentGrid = opponent.getGrid();
 
-        // 1. Notifier la vue (MVC + Observer)
+        // 0. VALIDATION: Check if the tile has already been hit/explored.
+        // We cannot attack the same spot twice (assuming standard rules).
+        if (opponentGrid.isTileHit(pos)) {
+            return; // Exit immediately, do not count this as a turn.
+        }
+
+        // 1. Notify the view that an action is happening at this position
         notifyAttack(pos, m_weaponStrategy);
 
-        // 2. Si le joueur est affecté par une tornade, scramble la position
-        //if (m_isTornadoed)
-        //{
-            //IL FAUT UNE METHODE
-        //}
+        // 2. Tornado Logic (Scramble position if needed)
+        // if (m_isTornadoed) {
+        //     pos = scramblePosition(pos);
+        // }
 
-        // 3. Appeler la stratégie de l’arme
-        m_weaponStrategy.use(opponentGrid, pos);
+        // 3. LOGIC BRANCH: Check the Terrain Type (Land vs Water)
+        // Assuming TileType is an Enum accessible via the Grid.
+        if (opponentGrid.isLand(pos)) {
 
-        // 4. Vérifier si un trap a été touché
-        //PlaceableObject obj = opponentGrid.getObjectAt(pos);
-        //notifyAttack(pos, weapon, obj.getType());
-        //checkIfTrapTriggered(opponent, pos);
+            // --- LAND LOGIC: LOOTING ---
 
-        // 5. Verifications pour armes spéciale
-        // Si l'arme n'est pas l'arme par défaut, on la retire de l'inventaire
+            // Mark the tile as explored/hit so we don't loot it again
+            opponentGrid.setTileHit(pos);
+
+            // Retrieve the object on this land tile (if any)
+            PlaceableObject foundObject = opponentGrid.getObjectAt(pos);
+
+            // Check if we found a weapon to add to inventory
+            if (foundObject != null) {
+                Weapon foundWeapon = (Weapon) foundObject;
+                addWeapon(foundWeapon);
+            }
+            // (Optional) Handle Traps on land here if necessary
+
+        } else {
+
+            // --- WATER LOGIC: SHOOTING ---
+
+            // Execute the weapon strategy (Bomb, Missile, Default, etc.)
+            // The weapon.use() method handles marking the grid as hit and checking for ships.
+            m_weaponStrategy.use(opponentGrid, pos);
+
+            // 4. Trap Logic (Triggered only on Water)
+            // checkIfTrapTriggered(opponent, pos);
+        }
+
+        // 5. INVENTORY MANAGEMENT (Special Weapons)
+        // If the current weapon is strictly a one-time use special weapon, remove it.
         if (m_weaponStrategy.getType() != WeaponType.DEFAULT) {
-            m_weapons.remove(m_weaponStrategy); // On l'enlève de l'inventaire
-            m_weaponStrategy = new Default(); // Arme par défaut
+            m_weapons.remove(m_weaponStrategy); // Remove from inventory
+            m_weaponStrategy = new Default(); // Switch back to Default weapon
         }
     }
 
