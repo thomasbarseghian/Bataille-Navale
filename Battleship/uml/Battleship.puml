@@ -375,6 +375,7 @@ package model
             -m_turnNumber : Integer
             -m_currentPlayer : Integer
             +<<create>> Game()
+            +createStandardFleet(factory : ShipFactory) : Ship[]
             +startGame()
             +startBattle()
             +nextTurn()
@@ -382,6 +383,8 @@ package model
             +stopGame(winner : Player)
             +getGameState() : GameState
             +getTurnNumber() : Integer
+            +getHumanPlayer() : Player
+            +getAiPlayer() : Player
             +addObserver(obs : GameObserver)
             +notifyGameState(gamestate: GameState)
             +notifyTurnNumber(turnNumber: Integer)

@@ -18,13 +18,13 @@ public class PlacementController {
      */
     public void placeShipsFixed() {
         // 1. Retrieve the Human Player (Index 0)
-        Player human = m_game.getPlayer(0);
+        Player human = m_game.getHumanPlayer();
 
         // 2. Delegate the placement logic to the Model (Human class)
         if (human != null) {
             human.placeShipFix();
         }
-        Player aiPlayer = m_game.getPlayer(1);
+        Player aiPlayer = m_game.getAIPlayer();
         if (aiPlayer != null) {
             System.out.println("PlacementController : L'IA place ses bateaux...");
             aiPlayer.placeShipFix(); // Delegate to AI class
