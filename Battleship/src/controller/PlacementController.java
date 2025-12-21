@@ -3,16 +3,15 @@ package controller;
 import model.game.Game;
 import model.grid.Grid;
 import model.placeableObject.ship.*;
+import model.player.Player;
 
 public class PlacementController {
     private Game m_game;
     private Grid m_playerGrid;
-    private ShipFactory m_factory; // Ajout de la factory
 
     public PlacementController(Game game, Grid playerGrid) {
         this.m_game = game;
         this.m_playerGrid = playerGrid;
-        this.m_factory = new ShipFactory(); // On l'initialise ici
     }
 
     /**
@@ -20,38 +19,22 @@ public class PlacementController {
      * Utilisation de la Factory pour créer les navires.
      */
     public void placeShipsFixed() {
-        // 1. Porte-Avion (5 cases)
-        Ship carrier = m_factory.createShip(ShipType.AIRCRAFTCARRIER);
-        carrier.setDirection(Direction.HORIZONTAL);
-        carrier.setPosition(0);
-        m_playerGrid.putPlaceObjectInTile(carrier);
+        // 1. Retrieve the Human Player (Index 0)
+        Player human = m_game.getPlayer(0);
 
-        // 2. Croiseur (4 cases)
-        Ship cruiser = m_factory.createShip(ShipType.CRUISER);
-        cruiser.setDirection(Direction.HORIZONTAL);
-        cruiser.setPosition(10);
-        m_playerGrid.putPlaceObjectInTile(cruiser);
-
-        // 3. Contre-Torpilleur (3 cases)
-        Ship destroyer = m_factory.createShip(ShipType.DESTROYER);
-        destroyer.setDirection(Direction.HORIZONTAL);
-        destroyer.setPosition(90);
-        m_playerGrid.putPlaceObjectInTile(destroyer);
-
-        // 4. Sous-Marin (3 cases)
-        Ship submarine = m_factory.createShip(ShipType.SUBMARINE);
-        submarine.setDirection(Direction.HORIZONTAL);
-        submarine.setPosition(97);
-        m_playerGrid.putPlaceObjectInTile(submarine);
-
-        // 5. Torpilleur (2 cases)
-        Ship torpedo = m_factory.createShip(ShipType.TORPEDOBOAT);
-        torpedo.setDirection(Direction.VERTICAL);
-        torpedo.setPosition(19);
-        m_playerGrid.putPlaceObjectInTile(torpedo);
+        // 2. Delegate the placement logic to the Model (Human class)
+        if (human != null) {
+            human.placeShipFix();
+        }
+        Player aiPlayer = m_game.getPlayer(1);
+        if (aiPlayer != null) {
+            System.out.println("PlacementController : L'IA place ses bateaux...");
+            aiPlayer.placeShipFix(); // Delegate to AI class
+        }
     }
 
     public void startGame() {
+        System.out.println("PlacementController : Lancement de la bataille...");
         m_game.startBattle();
     }
 }

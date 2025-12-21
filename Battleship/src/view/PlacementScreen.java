@@ -69,4 +69,9 @@ public class PlacementScreen extends JPanel implements GameObserver {
     public void updateTurnNumber(int turnNumber) {
         // Not needed here
     }
+
+    @Override
+    public void updateHistory(String logMessage) {
+        // Not needed here
+    }
 }
