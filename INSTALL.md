@@ -18,22 +18,27 @@ Pour vérifier l’installation de Java :
 java -version
 
 
-Récupération du projet
-Clonage via SSH
+## Récupération du projet
+
+### Clonage via SSH
+```bash
 git clone git@git.unistra.fr:barseghian-leger/a31-bataille-navale.git
-
-Clonage via HTTPS
+```
+### Clonage via HTTPS
+```bash
 git clone https://git.unistra.fr/barseghian-leger/a31-bataille-navale.git
-
+```
 Se placer ensuite dans le dossier du projet :
+```bash
 cd a31-bataille-navale
-
+```
 
 Compilation du projet
 Compilation en ligne de commande
 Depuis la racine du projet :
+```bash
 javac -d out $(find src -name "*.java")
-
+```
 Les fichiers .class seront générés dans le dossier out.
 
 Compilation avec IntelliJ IDEA
@@ -57,8 +62,8 @@ L’application se lance (interface graphique ou terminal selon la vue utilisée
 
 Structure du projet
 src/
- ├── model/        # Logique métier (jeu, grille, joueurs, objets)
- ├── view/         # Interfaces utilisateur (écrans, affichage)
- ├── controller/   # Contrôleurs (MVC)
- └── Main          #Pour lancer le jeu
+ ├── model/        # Logique métier (jeu, grille, joueurs, objets)  
+ ├── view/         # Interfaces utilisateur (écrans, affichage)  
+ ├── controller/   # Contrôleurs (MVC)  
+ └── Main          #Pour lancer le jeu  
 
