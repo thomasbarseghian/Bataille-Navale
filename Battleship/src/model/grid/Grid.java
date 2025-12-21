@@ -10,10 +10,27 @@ public class Grid {
     private int  m_size;
     private ArrayList<Tile> m_grid;
     private ArrayList<GridObserver> m_gridObservers;
-    public Grid(int size){
+    public Grid(int size) {
         this.m_size = size;
         this.m_grid = new ArrayList<Tile>();
         this.m_gridObservers = new ArrayList<GridObserver>();
+
+        int islandStart = (size - 4) / 2;
+        int islandEnd = islandStart + 4;
+
+        for (int i = 0; i < size * size; i++) {
+            int row = i / size;
+            int col = i % size;
+
+            TileType type = TileType.WATER;
+
+            if (row >= islandStart && row < islandEnd &&
+                    col >= islandStart && col < islandEnd) {
+                type = TileType.LAND;
+            }
+
+            m_grid.add(new Tile(type));
+        }
     }
     public void hitTile(int pos){
         m_grid.get(pos).hit();
@@ -28,6 +45,7 @@ public class Grid {
                             m_grid.get(position).setObject(object);
                         }
                 );
+                break;
             case TRAP:
                 // no trap for the moment : m_grid.get(object.getPosition()).setObject(object);
             case WEAPON:
@@ -57,4 +75,7 @@ public class Grid {
         return m_grid.get(pos);
     }
 
+    public int getSize() {
+        return m_size;
+    }
 }
