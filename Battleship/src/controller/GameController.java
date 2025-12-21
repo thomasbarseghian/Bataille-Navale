@@ -1,6 +1,7 @@
 package controller;
 
 import model.game.Game;
+import model.game.TurnObserver;
 import model.placeableObject.Weapon.WeaponType;
 import model.player.Player;
 
@@ -21,7 +22,9 @@ public class GameController implements TurnObserver {
         this.m_aiController.addObserver(this);
         this.m_currentPlayer = m_humanController.getPlayer();
     }
-
+    public void setGame(Game game) {
+        this.m_game = game;
+    }
     /**
      * The unified reaction to any turn ending.
      */
@@ -104,5 +107,10 @@ public class GameController implements TurnObserver {
 
         // Delegate to HumanController to handle the setup
         m_humanController.handleTileClick(targetPlayer, pos);
+    }
+    public void notifyAttackResult(Player attacker, int pos, WeaponType weapon, boolean isHit) {
+        if (m_game != null) {
+            m_game.recordMove(attacker, pos, weapon, isHit);
+        }
     }
 }

@@ -9,7 +9,6 @@ import model.placeableObject.Weapon.WeaponType;
 import model.placeableObject.ship.Ship;
 
 import java.util.ArrayList;
-import static model.placeableObject.ship.Direction.*;
 
 
 public abstract class Player {
@@ -152,7 +151,7 @@ public abstract class Player {
     {
         for (Ship ship : m_ships)
         {
-            if (ship.getHp() <= 0)
+            if (ship.getHp() > 0)
             {
                 return false;
             }
@@ -163,5 +162,8 @@ public abstract class Player {
     // In class Player.java
     public Weapon getWeaponStrategy() {
         return m_weaponStrategy;
+    }
+
+    public ArrayList<Ship> getShips() { return m_ships;
     }
 }

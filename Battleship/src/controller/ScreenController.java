@@ -42,4 +42,9 @@ public class ScreenController implements GameObserver {
     public void updateTurnNumber(int turnNumber) {
         // Pas nécessaire pour changer d'écran, mais obligatoire par l'interface
     }
+
+    @Override
+    public void updateHistory(String logMessage) {
+        // Not needed here
+    }
 }

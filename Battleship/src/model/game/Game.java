@@ -6,6 +6,7 @@ import model.placeableObject.ship.ShipFactory;
 import model.player.Human;
 import model.player.Player;
 import model.player.PlayerObserver;
+import model.placeableObject.Weapon.WeaponType;
 
 import java.util.ArrayList;
 
@@ -53,6 +54,22 @@ public class Game
         m_moveHistory = new MoveData();
     }
 
+    /**
+     * Records a move in history and notifies the view.
+     * Called by GameController.
+     */
+    public void recordMove(Player player, int position, WeaponType weapon, boolean isHit) {
+        // 1. Add to data structure
+        // Note: converting boolean isHit to int because your MoveData uses int in addData signature
+        m_moveHistory.addData(position, isHit ? 1 : 0, player, weapon);
+
+        // 2. Create a string message for the log
+        String hitString = isHit ? "TOUCHÉ" : "RATÉ";
+        String message = player.getName() + " tire en case " + position + " avec " + weapon + " : " + hitString;
+
+        // 3. Notify observers (BattleScreen)
+        notifyHistory(message);
+    }
     /**
      * Notify the game is state of CONFIGURATION.
      */
@@ -140,5 +157,20 @@ public class Game
             return m_players[index];
         }
         return null;
+    }
+
+    public void setPlayers(Player p1, Player p2) {
+        if (m_players == null) {
+            m_players = new Player[2];
+        }
+        this.m_players[0] = p1;
+        this.m_players[1] = p2;
+    }
+    public void notifyHistory(String message)
+    {
+        for (GameObserver observer : m_gameObserver)
+        {
+            observer.updateHistory(message);
+        }
     }
 }
