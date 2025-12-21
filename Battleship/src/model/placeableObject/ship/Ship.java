@@ -47,4 +47,7 @@ public abstract class Ship extends PlaceableObject {
         }
         return AllPositions;
     }
+    public void reset() {
+        this.m_hp = this.m_size;
+    }
 }

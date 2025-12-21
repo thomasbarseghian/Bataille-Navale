@@ -179,4 +179,20 @@ public class Game
             observer.updateHistory(message);
         }
     }
+    public void restart() {
+        if (m_players != null) {
+            for (Player p : m_players) {
+                p.reset();
+            }
+        }
+
+        m_turnNumber = 0;
+        m_winner = null;
+        m_moveHistory = new MoveData();
+
+        m_state = GameState.CONFIGURATION;
+        notifyGameState(m_state);
+
+        notifyTurnNumber(0);
+    }
 }

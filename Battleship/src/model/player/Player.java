@@ -76,6 +76,7 @@ public abstract class Player {
     public void addWeapon(Weapon weapon)
     {
         m_weapons.add(weapon);
+        System.out.println(m_name + " a trouvé une arme : " + weapon.getType());
     }
 
     public void addTrap(Trap trap)
@@ -192,5 +193,15 @@ public abstract class Player {
     }
 
     public ArrayList<Ship> getShips() { return m_ships;
+    }
+    public void reset() {
+        m_grid.reset();
+
+        for (Ship s : m_ships) {
+            s.reset();
+        }
+
+        m_weaponStrategy = new Default();
+        m_weapons.clear();
     }
 }

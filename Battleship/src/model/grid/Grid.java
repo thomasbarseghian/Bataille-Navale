@@ -71,6 +71,7 @@ public class Grid {
                 // no trap for the moment : m_grid.get(object.getPosition()).setObject(object);
             case WEAPON:
                 m_grid.get(pos).setObject(object);
+                break;
             default:
                 break;
         }
@@ -147,5 +148,23 @@ public class Grid {
     // Sécurité pour éviter les IndexOutOfBoundsException
     private boolean isValidPos(int pos) {
         return pos >= 0 && pos < m_size * m_size;
+    }
+    public void reset() {
+        for (Tile tile : m_grid) {
+            tile.reset();
+        }
+        // Important : On prévient la vue que tout est vide (pour effacer les couleurs)
+        for (int i = 0; i < m_size * m_size; i++) {
+            notifyTileHit(i); //do this in order to refresh the view
+        }
+    }
+    public ArrayList<Integer> getLandTiles() {
+        ArrayList<Integer> landIndices = new ArrayList<>();
+        for (int i = 0; i < m_grid.size(); i++) {
+            if (m_grid.get(i).getTileType() == TileType.LAND) {
+                landIndices.add(i);
+            }
+        }
+        return landIndices;
     }
 }

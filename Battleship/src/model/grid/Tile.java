@@ -48,4 +48,8 @@ public class Tile {
         }
         return true;
     }
+    public void reset() {
+        this.m_isHit = false;
+        this.m_object = null;
+    }
 }
