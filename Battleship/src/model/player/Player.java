@@ -151,7 +151,7 @@ public abstract class Player {
     {
         for (Ship ship : m_ships)
         {
-            if (ship.getHp() <= 0)
+            if (ship.getHp() > 0)
             {
                 return false;
             }
