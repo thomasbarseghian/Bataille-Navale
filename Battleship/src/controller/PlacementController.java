@@ -25,11 +25,13 @@ public class PlacementController {
         // 2. Delegate the placement logic to the Model (Human class)
         if (human != null) {
             human.placeShipFix();
+            placeBonusItems(human.getGrid());
         }
         Player aiPlayer = m_game.getAIPlayer();
         if (aiPlayer != null) {
             System.out.println("PlacementController : L'IA place ses bateaux...");
             aiPlayer.placeShipFix(); // Delegate to AI class
+            placeBonusItems(aiPlayer.getGrid());
         }
     }
     private void placeBonusItems(Grid grid) {
