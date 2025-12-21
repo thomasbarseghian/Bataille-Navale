@@ -3,7 +3,7 @@ package controller;
 import model.placeableObject.Weapon.WeaponType;
 import model.player.Player;
 
-public class GameController {
+public class GameController implements TurnObserver {
 
     private HumanController m_humanController;
     private AIController m_aiController;
@@ -13,32 +13,35 @@ public class GameController {
         this.m_humanController = player;
         this.m_aiController = ai;
         // Au début, c'est le tour du joueur humain
+        // GameController subscribes to both sub-controllers
+        this.m_humanController.addObserver(this);
+        this.m_aiController.addObserver(this);
         this.m_currentPlayer = m_humanController.getPlayer();
     }
 
     /**
-     * Called by the HumanController (via the WeaponCallback) when the player's action is fully complete.
+     * The unified reaction to any turn ending.
      */
-    public void endHumanTurn() {
-        // TODO: Check for victory/defeat conditions here
+    @Override
+    public void onTurnEnded(Player playerWhoFinished) {
 
-        // We change the current Player to the AI
+        // We check who finished to switch to the other
+        if (playerWhoFinished == m_humanController.getPlayer()) {
+            endHumanTurn();
+        } else {
+            endAiTurn();
+        }
+    }
+
+    private void endHumanTurn() {
+        // TODO: Check victory...
         m_currentPlayer = m_aiController.getPlayer();
-
-        // Triggers the AI logic
         m_aiController.startTurn();
     }
 
-    /**
-     * Called by the AIController (via the WeaponCallback) when the AI's action is fully complete.
-     */
-    public void endAiTurn() {
-        // TODO: Check for victory/defeat conditions here
-
-        // We change the current Player to the Human
+    private void endAiTurn() {
+        // TODO: Check defeat...
         m_currentPlayer = m_humanController.getPlayer();
-
-        // Unlocks the UI or notifies the player it's their turn
         m_humanController.startTurn();
     }
 
@@ -69,7 +72,10 @@ public class GameController {
     // Called when the player clicks on an enemy tile
     public void onTileClick(int pos, Player targetPlayer) {
 
-        // The Player attacks with the equipped weapon
-        m_currentPlayer.attack(targetPlayer, pos);
+        // Security check
+        if (m_currentPlayer != m_humanController.getPlayer()) return;
+
+        // Delegate to HumanController to handle the setup
+        m_humanController.handleTileClick(targetPlayer, pos);
     }
 }
