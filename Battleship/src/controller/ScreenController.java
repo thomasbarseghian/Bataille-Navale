@@ -1,50 +1,43 @@
 package controller;
 
-import model.game.Game; // N'oublie pas cet import !
+import model.game.Game;
 import model.game.GameObserver;
 import model.game.GameState;
 import view.MainView;
 
 public class ScreenController implements GameObserver {
-    private MainView mainView;
 
-    // Modification ici : On ajoute Game en paramètre
-    public ScreenController(MainView mainView, Game game) {
-        this.mainView = mainView;
+    private MainView m_view;
+    private Game m_game;
 
-        // INDISPENSABLE : On s'abonne pour recevoir les alertes quand l'état change
-        game.addObserver(this);
+    public ScreenController(MainView view, Game game) {
+        this.m_view = view;
+        this.m_game = game;
+
+        // Subscribe to game events to switch screens automatically
+        this.m_game.addObserver(this);
     }
 
     @Override
     public void updateGameState(GameState state) {
-        System.out.println("Changement d'état détecté : " + state);
-
-        switch (state) {
-            case CONFIGURATION:
-                mainView.showScreen("CONFIG");
-                break;
-            case PLACEMENT:
-                mainView.showScreen("PLACEMENT");
-                break;
-            case PLAYING:
-                mainView.showScreen("PLAYING");
-                break;
-            case END:
-                mainView.showScreen("END");
-                break;
-            default:
-                break;
+        if (state == GameState.CONFIGURATION) {
+            m_view.showScreen("CONFIG");
+        }
+        else if (state == GameState.PLACEMENT) {
+            m_view.showScreen("PLACEMENT");
+        }
+        else if (state == GameState.PLAYING) {
+            m_view.showScreen("PLAYING");
+        }
+        else if (state == GameState.END) {
+            // Switch to the End screen when game is over
+            m_view.showScreen("END");
         }
     }
 
     @Override
-    public void updateTurnNumber(int turnNumber) {
-        // Pas nécessaire pour changer d'écran, mais obligatoire par l'interface
-    }
+    public void updateTurnNumber(int turnNumber) {}
 
     @Override
-    public void updateHistory(String logMessage) {
-        // Not needed here
-    }
+    public void updateHistory(String logMessage) {}
 }

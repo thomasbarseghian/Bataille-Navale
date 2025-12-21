@@ -20,6 +20,7 @@ public class Game
     private Player m_players[];
     private ArrayList<GameObserver> m_gameObserver;
     private MoveData m_moveHistory;
+    private Player m_winner;
 
     public Game()
     {
@@ -52,6 +53,7 @@ public class Game
 
         m_gameObserver = new ArrayList<GameObserver>();
         m_moveHistory = new MoveData();
+        m_winner = null;
     }
 
     /**
@@ -126,10 +128,14 @@ public class Game
      * @param winner The player who won (to display in the view).
      */
     public void stopGame(Player winner) {
+        this.m_winner = winner;
         m_state = GameState.END;
         notifyGameState(m_state);
 
         //NEED A NOTIFY HERE ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+    public Player getWinner() {
+        return m_winner;
     }
 
     public void addObserver(GameObserver observer)

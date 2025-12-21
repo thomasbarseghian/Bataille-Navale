@@ -42,4 +42,10 @@ public class Tile {
     public void setObject(PlaceableObject object) {
         this.m_object = object;
     }
+    public boolean isEmpty() {
+        if(m_object!=null){
+            return false;
+        }
+        return true;
+    }
 }

@@ -1,6 +1,7 @@
 package model.grid;
 
 import model.placeableObject.PlaceableObject;
+import model.placeableObject.PlaceableObjectType;
 import model.placeableObject.Weapon.Weapon;
 import model.placeableObject.ship.Ship;
 
@@ -33,7 +34,27 @@ public class Grid {
         }
     }
     public void hitTile(int pos){
-        m_grid.get(pos).hit();
+        Tile tile = m_grid.get(pos);
+
+        // Prevent hitting the same spot twice (optional safety)
+        if (tile.isHit()) {
+            return;
+        }
+
+        // 1. Mark the tile visually as hit
+        tile.hit();
+
+        // 2. LOGIC FIX: Damage the ship!
+        if (!tile.isEmpty()) {
+            PlaceableObject obj = tile.getObject();
+
+            // Check if it is a Ship and decrease HP
+            if (obj.getObjectType() == PlaceableObjectType.SHIP) {
+                ((Ship) obj).hit();
+            }
+        }
+
+        // 3. Notify View
         notifyTileHit(pos);
     }
     public void putPlaceObjectInTile(PlaceableObject object){

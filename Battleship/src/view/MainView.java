@@ -34,7 +34,9 @@ public class MainView extends JFrame {
         root.add(battleScreen, "PLAYING");
         // ----------------------
 
-        root.add(new JPanel(), "END");
+        EndScreen endScreen = new EndScreen(game);
+        game.addObserver(endScreen); // It needs to know when game ends to update text
+        root.add(endScreen, "END");
 
         this.setContentPane(root);
         this.setSize(1000, 750);
