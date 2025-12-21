@@ -374,13 +374,17 @@ package model
         {
             -m_turnNumber : Integer
             -m_currentPlayer : Integer
+            -m_winner : Player
             +<<create>> Game()
             +createStandardFleet(factory : ShipFactory) : Ship[]
+            +recordMove(player : Player, position : Integer, weapon : WeaponType, isHit : Boolean)
             +startGame()
+            +startPlacement()
             +startBattle()
             +nextTurn()
             +checkWin() : Boolean
             +stopGame(winner : Player)
+            +getWinner() : Player
             +getGameState() : GameState
             +getTurnNumber() : Integer
             +getHumanPlayer() : Player
@@ -388,6 +392,8 @@ package model
             +addObserver(obs : GameObserver)
             +notifyGameState(gamestate: GameState)
             +notifyTurnNumber(turnNumber: Integer)
+            +notifyHistory(message : String)
+            +restart()
         }
         enum GameState
         {
@@ -400,10 +406,11 @@ package model
         {
             +updateGameState(gamestate: GameState)
             +updateTurnNumber(turnNumber: Integer)
+            +updateHistory(logMessage: String)
         }
         class MoveData {
-            -m_position[] : Integer
-            -m_hit[] : Boolean
+            -m_position : Integer[*]
+            -m_m_isHit : Boolean[*]
             +<<create>> MoveData()
             +addData(position : Integer, hit : Integer, player : Player, weapon : WeaponType)
         }
@@ -418,12 +425,14 @@ model.placeableObject.PlaceableObject "1" *->  "-m_objectType" model.placeableOb
 'Game relations
 model.game.Game "1" *--> "-m_gameState" model.game.GameState: > is currently in
 model.game.Game "2" o--> "-m_players" model.player.Player: > is played by
-model.game.Game "*" o--> "-m_gameObservers" model.game.GameObserver : > notifies
-model.game.Game "*" o--> "-m_moveHistory" model.game.MoveData : > has been played
+model.game.Game "*" o--> "-m_gameObserver" model.game.GameObserver : > notifies
+model.game.Game "1" *--> "-m_moveHistory" model.game.MoveData : > has been played
+model.game.Game "0..1" --> "-m_winner" model.player.Player : > has winner
 
 'MoveData relations
 model.game.MoveData "*" o--> "-m_player" model.player.Player: > move played by
-model.game.MoveData "*" o--> "-m_weapon" model.placeableObject.weapon.WeaponType: > move attacked with
+model.game.MoveData "*" *--> "-m_weapon" model.placeableObject.weapon.WeaponType: > move attacked with
+model.game.MoveData ..> model.placeableObject.weapon.WeaponFactory : <<uses>>
 
 'Grid relations
 model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
