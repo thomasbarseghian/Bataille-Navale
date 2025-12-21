@@ -3,20 +3,30 @@ import controller.MainController;
 import controller.PlacementController;
 import controller.ScreenController;
 import model.game.Game;
+import model.grid.Grid;
 import view.MainView;
 
 public class Main {
     public static void main(String[] args) {
-        Game gameModel = new Game();
+        // 1. Modèle
+        Game game = new Game();
 
-        ConfigController configController = new ConfigController(gameModel);
-        PlacementController placementController = new PlacementController();
-        MainController mainController = new MainController();
+        // On récupère la grille du joueur 0 (Humain) via la méthode getPlayer(0)
+        Grid humanGrid = game.getPlayer(0).getGrid();
 
-        MainView masterView = new MainView(configController,placementController,mainController);
+        // 2. Contrôleurs
+        ConfigController configCtrl = new ConfigController(game);
+        PlacementController placementCtrl = new PlacementController(game, humanGrid);
+        MainController mainCtrl = new MainController(); // Création vide pour l'instant
 
+        // 3. Vue
+        // On passe TOUS les contrôleurs + la grille + le jeu à la vue principale
+        MainView view = new MainView(configCtrl, placementCtrl, mainCtrl, humanGrid, game);
 
-        ScreenController screenController = new ScreenController(masterView);
+        // 4. Contrôleur d'écran (Gestion des changements d'écran)
+        ScreenController screenCtrl = new ScreenController(view, game);
 
+        // 5. Lancement
+        game.startGame();
     }
 }

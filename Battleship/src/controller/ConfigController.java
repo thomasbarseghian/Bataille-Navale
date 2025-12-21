@@ -9,5 +9,6 @@ public class ConfigController {
         this.gameModel = gameModel;
     }
     public void applyConfiguration() {
+        gameModel.startPlacement();
     }
 }

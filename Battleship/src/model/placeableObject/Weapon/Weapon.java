@@ -3,6 +3,7 @@ package model.placeableObject.Weapon;
 import model.game.WeaponCallback;
 import model.grid.Grid;
 import model.placeableObject.PlaceableObject;
+import model.placeableObject.PlaceableObjectType;
 
 public abstract class Weapon extends PlaceableObject
 {
@@ -12,6 +13,11 @@ public abstract class Weapon extends PlaceableObject
      * It is a single reference (Callback pattern).
      */
     protected WeaponCallback callback;
+    private WeaponType m_weaponType;
+    public Weapon(WeaponType type) {
+        super(PlaceableObjectType.WEAPON); // On dit au parent : "Je suis une WEAPON"
+        this.m_weaponType = type;
+    }
 
     /**
      * Abstract method to define the weapon's behavior on the grid.

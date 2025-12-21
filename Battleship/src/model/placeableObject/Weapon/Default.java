@@ -6,7 +6,7 @@ public class Default extends Weapon{
     
     public Default()
     {
-
+        super(WeaponType.DEFAULT);
     }
 
     @Override
