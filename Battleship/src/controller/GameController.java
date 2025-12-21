@@ -1,5 +1,6 @@
 package controller;
 
+import model.game.Game;
 import model.placeableObject.Weapon.WeaponType;
 import model.player.Player;
 
@@ -8,8 +9,10 @@ public class GameController implements TurnObserver {
     private HumanController m_humanController;
     private AIController m_aiController;
     private Player m_currentPlayer;
+    private Game m_game;
 
-    public GameController(HumanController player, AIController ai) {
+    public GameController(Game game, HumanController player, AIController ai) {
+        this.m_game = game;
         this.m_humanController = player;
         this.m_aiController = ai;
         // Au début, c'est le tour du joueur humain
@@ -34,14 +37,38 @@ public class GameController implements TurnObserver {
     }
 
     private void endHumanTurn() {
-        // TODO: Check victory...
-        m_currentPlayer = m_aiController.getPlayer();
+        // 1. Check if the opponent (AI) has lost
+        Player ai = m_aiController.getPlayer();
+
+        if (ai.allShipsAreSunk()) {
+            // VICTORY!
+            // Maybe update view here ?
+            m_game.stopGame(m_humanController.getPlayer());
+            return;
+        }
+
+        // 2. If game continues, switch turn
+        m_currentPlayer = ai;
+        m_game.nextTurn(); // Update turn number in Model
+        m_game.notifyTurnNumber(m_game.getTurnNumber()); // Notify View
+
         m_aiController.startTurn();
     }
 
     private void endAiTurn() {
-        // TODO: Check defeat...
-        m_currentPlayer = m_humanController.getPlayer();
+        // 1. Check if the opponent (Human) has lost
+        Player human = m_humanController.getPlayer();
+
+        if (human.allShipsAreSunk()) {
+            // DEFEAT!
+            // Maybe update view here ?
+            m_game.stopGame(m_aiController.getPlayer());
+            // Don't start next turn
+            return;
+        }
+
+        // 2. If game continues, switch turn
+        m_currentPlayer = human;
         m_humanController.startTurn();
     }
 

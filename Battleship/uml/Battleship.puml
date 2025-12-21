@@ -367,6 +367,7 @@ package model
             +startBattle()
             +nextTurn()
             +checkWin() : Boolean
+            +stopGame(winner : Player)
             +getGameState() : GameState
             +getTurnNumber() : Integer
             +addObserver(obs : GameObserver)
@@ -512,5 +513,5 @@ controller.GameController "1" o--> "-m_humanController" controller.HumanControll
 controller.GameController "1" o--> "-m_aiController" controller.AIController : > coordinates
 controller.GameController "1" o--> "-m_currentPlayer" model.player.Player : > tracks active player
 controller.GameController ..> model.placeableObject.Weapon.WeaponType : <<uses>>
-
+controller.GameController "1" o--> "-m_game" model.game.Game : > is the active game
 @enduml
