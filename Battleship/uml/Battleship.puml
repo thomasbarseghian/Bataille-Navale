@@ -156,7 +156,8 @@ package model
         abstract PlaceableObject <<abstract>>
         {
             -m_position : Integer
-            +getPosition()
+            +<<create>>PlaceableObject(type : PlaceableObjectType)
+            +getPosition() : Integer
             +setPosition(pos:Integer)
             +getObjectType():PlaceableObjectType
         }
@@ -171,12 +172,14 @@ package model
         {
             class Trap <<abstract>> implements model.placeableObject.PlaceableObject
             {
-                +<<create>>Trap()
+                +<<create>>Trap(type : TrapType)
                 +activate(opponentGrid : Grid)
+                +getTrapType() : TrapType
             }
 
             interface TrapFactory
             {
+                +<<create>>TrapFactory()
                 +createTrap(trapType : TrapType) : Trap
             }
 
@@ -219,30 +222,32 @@ package model
                 +hit()
                 +getAllPositions():Integer[*]
                 'We will only know the direction when placing the boat not during the creation
+                +reset()
             }
             interface ShipFactory
             {
+                +<<create>> ShipFactory()
                 +createShip(shipType : ShipType) : Ship
             }
             class AircraftCarrier extends Ship
             {
-                +<<create>> AircraftCarrier()
+                +<<create>> AircraftCarrier(size : Integer, type : ShipType)
             }
             class Cruiser extends Ship
             {
-                +<<create>> Cruiser()
+                +<<create>> Cruiser(size : Integer, type : ShipType)
             }
             class Destroyer extends Ship
             {
-                +<<create>> Destroyer()
+                +<<create>> Destroyer(size : Integer, type : ShipType)
             }
             class Submarine extends Ship
             {
-                +<<create>> Submarine()
+                +<<create>> Submarine(size : Integer, type : ShipType)
             }
             class TorpedoBoat extends Ship
             {
-                +<<create>> TorpedoBoat()
+                +<<create>> TorpedoBoat(size : Integer, type : ShipType)
             }
             enum ShipType
             {
@@ -263,7 +268,6 @@ package model
             class Weapon <<abstract>> extends model.placeableObject.PlaceableObject
             {
                 +<<create>>Weapon(type : WeaponType)
-                +use(opponentGrid : Grid, pos : Integer)
                 {abstract} +use(grid : Grid, pos : Integer)
                 +setCallback(callback : WeaponCallback)
                 +notifyFinished()
@@ -271,28 +275,29 @@ package model
             }
             interface WeaponFactory
             {
+                +<<create>>WeaponFactory()
                 +createWeapon(weaponType : WeaponType) : Weapon
             }
             class Default extends Weapon
             {
                 +<<create>>Default()
-                +use(opponentGrid : Grid, pos : Integer) : Boolean
+                +use(opponentGrid : Grid, pos : Integer)
             }
             class Bomb extends Weapon
             {
                 +<<create>>Bomb()
                 +getType() : WeaponType
-                +use(opponentGrid : Grid, pos : Integer) : Boolean
-                +isInsideGrid(x : Integer, y : Integer, size : Integer) : Boolean
+                +use(grid : Grid, centerPos : Integer)
+                -isInsideGrid(x : Integer, y : Integer, size : Integer) : Boolean
             }
             class Sonar extends Weapon
             {
                 +<<create>>Sonar()
-                +use(opponentGrid : Grid, pos : Integer) : Booolean
+                +use(grid : Grid, pos : Integer)
             }
             enum WeaponType
             {
-                MISSILE
+                DEFAULT
                 BOMB
                 SONAR
             }
@@ -450,13 +455,13 @@ model.grid.Tile "0..1" *--> "-m_object" model.placeableObject.PlaceableObject: >
 model.grid.Tile "1" *->  "-m_tileType" model.grid.TileType : > is of the type\t
 
 'Ship relations
-model.placeableObject.ship.Ship "1" o--> "-m_shipTyрe" model.placeableObject.ship.ShipType: > is of the type
-model.placeableObject.ship.Ship "1" o--> "-m_direction" model.placeableObject.ship.Direction: > is in this direction
+model.placeableObject.ship.Ship "1" *--> "-m_shipType" model.placeableObject.ship.ShipType: > is of the type
+model.placeableObject.ship.Ship "1" *--> "-m_direction" model.placeableObject.ship.Direction: > is in this direction
 
 'Weapon relations
 model.placeableObject.weapon.Weapon ..> model.grid.Grid : <<uses>>
 model.placeableObject.weapon.Weapon "1" *->  "-m_weaponType" model.placeableObject.weapon.Weapon : > is of the type\t
-model.placeableObject.weapon.Weapon "1" *->  "-m_callback" model.game.WeaponCallback : > calls back\t
+model.placeableObject.weapon.Weapon "0..1" o->  "#m_callback" model.game.WeaponCallback : > calls back\t
 
 'Trap relations
 model.placeableObject.trap.Trap "1" *->  "-m_trapType" model.placeableObject.trap.TrapType : > is of the type
@@ -483,23 +488,26 @@ model.player.Player ..> model.placeableObject.PlaceableObject : <<uses>>
 model.player.difficulty .> model.player.AI : <<uses>>
 
 'ShipFactory relations
-model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Ship : <<uses>>
+model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Ship : <<creates>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Submarine : <<instantiate>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.TorpedoBoat : <<instantiate>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Cruiser : <<instantiate>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.Destroyer : <<instantiate>>
 model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.AircraftCarrier : <<instantiate>>
+model.placeableObject.ship.ShipFactory ..> model.placeableObject.ship.ShipType : <<uses>>
 
 'WeaponFactory relations
-model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Weapon : <<uses>>
+model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Weapon : <<creates>>
 model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Bomb : <<instantiate>>
 model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Sonar : <<instantiate>>
 model.placeableObject.weapon.WeaponFactory .> model.placeableObject.weapon.Default : <<instantiate>>
+model.placeableObject.weapon.WeaponFactory ..> model.placeableObject.weapon.WeaponType : <<uses>>
 
 'TrapFactory relations
 model.placeableObject.trap.TrapFactory .> model.placeableObject.trap.Trap : <<uses>>
 model.placeableObject.trap.TrapFactory .> model.placeableObject.trap.Blackhole : <<instantiate>>
 model.placeableObject.trap.TrapFactory .> model.placeableObject.trap.Tornado : <<instantiate>>
+model.placeableObject.trap.TrapFactory ..> model.placeableObject.trap.TrapType : <<uses>>
 
 ' EndScreen also observes the gird
 EndScreen ..|> model.grid.GridObserver
