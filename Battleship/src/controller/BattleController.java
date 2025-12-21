@@ -1,6 +1,7 @@
 package controller;
 
 import model.grid.Grid;
+import model.placeableObject.Weapon.WeaponType;
 import model.placeableObject.ship.Ship;
 import model.player.Player;
 
@@ -27,6 +28,15 @@ public class BattleController {
     }
 
     /**
+     * NOUVEAU : Tente d'équiper une arme via le joueur.
+     * @param type Le type d'arme (BOMB, DEFAULT...)
+     * @return true si l'arme a été équipée, false sinon (ex: pas dans l'inventaire)
+     */
+    public boolean onWeaponSelected(WeaponType type) {
+        return m_humanLogic.getPlayer().equipWeapon(type);
+    }
+
+    /**
      * Provides the Human Grid to the View (via the HumanController).
      */
     public Grid getHumanGrid() {
@@ -42,7 +52,6 @@ public class BattleController {
 
     /**
      * Generates the HTML Stats string for the Human Player.
-     * The View just displays this string without knowing the logic.
      */
     public String getHumanStatsText() {
         return generateStatsHTML(m_humanLogic.getPlayer(), "Vous");
@@ -62,7 +71,6 @@ public class BattleController {
         int alive = 0;
         int sunk = 0;
 
-        // We iterate here in the Controller, not the View
         if (p.getShips() != null) {
             for (Ship s : p.getShips()) {
                 if (s.isDestroyed()) {

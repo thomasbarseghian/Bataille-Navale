@@ -3,6 +3,7 @@ package view;
 import controller.BattleController;
 import model.game.GameObserver;
 import model.game.GameState;
+import model.placeableObject.Weapon.WeaponType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,17 +19,46 @@ public class BattleScreen extends JPanel implements GameObserver {
     private JLabel m_enemyStatsLabel;
     private JTextArea m_gameLog;
 
-    // NO MORE PLAYER REFERENCES HERE! Only Controller.
+    // NOUVEAU : UI pour les armes
+    private JLabel m_currentWeaponLabel;
+    private JButton m_btnStandard;
+    private JButton m_btnBomb;
+
     public BattleScreen(BattleController controller) {
         this.m_controller = controller;
 
         this.setLayout(new BorderLayout());
 
-        // --- TOP ---
-        JPanel topPanel = new JPanel();
+        // --- TOP : Tour + Armes ---
+        JPanel topPanel = new JPanel(new BorderLayout());
+
+        // Tour au centre
         m_turnLabel = new JLabel("Tour actuel : 1");
         m_turnLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        topPanel.add(m_turnLabel);
+        m_turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        topPanel.add(m_turnLabel, BorderLayout.CENTER);
+
+        // Panneau Armes à droite (NOUVEAU)
+        JPanel weaponPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        weaponPanel.setBorder(BorderFactory.createTitledBorder("Arsenal"));
+
+        m_currentWeaponLabel = new JLabel("Arme : STANDARD");
+        m_currentWeaponLabel.setForeground(Color.BLUE);
+        m_currentWeaponLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        weaponPanel.add(m_currentWeaponLabel);
+
+        m_btnStandard = new JButton("Standard");
+        m_btnStandard.addActionListener(e -> selectWeapon(WeaponType.DEFAULT));
+        weaponPanel.add(m_btnStandard);
+
+        m_btnBomb = new JButton("BOMBE");
+        m_btnBomb.setBackground(Color.RED);
+        m_btnBomb.setForeground(Color.WHITE);
+        m_btnBomb.addActionListener(e -> selectWeapon(WeaponType.BOMB));
+        weaponPanel.add(m_btnBomb);
+
+        topPanel.add(weaponPanel, BorderLayout.EAST);
+
         this.add(topPanel, BorderLayout.NORTH);
 
         // --- CENTER (Grids) ---
@@ -36,14 +66,12 @@ public class BattleScreen extends JPanel implements GameObserver {
 
         // Left: Player
         JPanel leftPanel = new JPanel(new BorderLayout());
-        // We ask the Controller for the Grid
         m_playerGridPanel = new GridPanel(m_controller.getHumanGrid(), false);
         leftPanel.add(new JLabel("Votre Flotte"), BorderLayout.NORTH);
         leftPanel.add(m_playerGridPanel, BorderLayout.CENTER);
 
         // Right: Enemy
         JPanel rightPanel = new JPanel(new BorderLayout());
-        // We ask the Controller for the Grid
         m_enemyGridPanel = new GridPanel(m_controller.getAiGrid(), true);
         rightPanel.add(new JLabel("Radar Ennemi"), BorderLayout.NORTH);
         rightPanel.add(m_enemyGridPanel, BorderLayout.CENTER);
@@ -53,6 +81,10 @@ public class BattleScreen extends JPanel implements GameObserver {
             JButton btn = (JButton) e.getSource();
             int pos = (int) btn.getClientProperty("position");
             m_controller.onEnemyGridClicked(pos);
+
+            // IMPORTANT : Après un tir, on remet l'affichage à "Standard"
+            // car les armes spéciales (Bombe) sont à usage unique.
+            updateWeaponLabel(WeaponType.DEFAULT);
         });
 
         gridsContainer.add(leftPanel);
@@ -81,8 +113,27 @@ public class BattleScreen extends JPanel implements GameObserver {
         updateStats(); // Initial update
     }
 
+    // NOUVEAU : Méthode pour gérer le clic sur une arme
+    private void selectWeapon(WeaponType type) {
+        // On demande au contrôleur si on peut équiper l'arme
+        boolean success = m_controller.onWeaponSelected(type);
+
+        if (success) {
+            updateWeaponLabel(type);
+        }
+    }
+
+    // Change visuellement le label de l'arme
+    private void updateWeaponLabel(WeaponType type) {
+        m_currentWeaponLabel.setText("Arme : " + type);
+        if (type == WeaponType.BOMB) {
+            m_currentWeaponLabel.setForeground(Color.RED);
+        } else {
+            m_currentWeaponLabel.setForeground(Color.BLUE);
+        }
+    }
+
     private void updateStats() {
-        // We ask the Controller for the formatted text
         m_playerStatsLabel.setText(m_controller.getHumanStatsText());
         m_enemyStatsLabel.setText(m_controller.getAiStatsText());
     }
