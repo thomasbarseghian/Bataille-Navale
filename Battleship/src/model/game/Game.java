@@ -3,6 +3,7 @@ package model.game;
 import model.grid.Grid;
 import model.placeableObject.ship.Ship;
 import model.placeableObject.ship.ShipFactory;
+import model.player.AI;
 import model.player.Human;
 import model.player.Player;
 import model.player.PlayerObserver;
@@ -22,38 +23,48 @@ public class Game
     private MoveData m_moveHistory;
     private Player m_winner;
 
-    public Game()
-    {
+    public Game() {
         m_turnNumber = 0;
-        m_currentPlayer = 0;
+        m_currentPlayer = 0; // 0 = Humain
         m_state = GameState.CONFIGURATION;
         m_players = new Player[2];
 
+        // 1. Creation of the Factory
         ShipFactory fac = new ShipFactory();
-        ArrayList<Ship> ships1 = new ArrayList<Ship>();
-        ships1.add(fac.createShip(AIRCRAFTCARRIER));
-        ships1.add(fac.createShip(CRUISER));
-        ships1.add(fac.createShip(DESTROYER));
-        ships1.add(fac.createShip(SUBMARINE));
-        ships1.add(fac.createShip(TORPEDOBOAT));
 
-        ArrayList<Ship> ships2 = new ArrayList<Ship>();
-        ships2.add(fac.createShip(AIRCRAFTCARRIER));
-        ships2.add(fac.createShip(CRUISER));
-        ships2.add(fac.createShip(DESTROYER));
-        ships2.add(fac.createShip(SUBMARINE));
-        ships2.add(fac.createShip(TORPEDOBOAT));
+        // 2. Creation of the fleets
+        ArrayList<Ship> ships1 = createStandardFleet(fac);
+        ArrayList<Ship> ships2 = createStandardFleet(fac);
+
+        // 3. Creation of the grids
         Grid grid1 = new Grid(10);
         Grid grid2 = new Grid(10);
 
-        Player j1 = new Human("Joueur 1", grid1, ships1);
-        Player j2 = new Human("Joueur 2", grid2, ships2);
-        m_players[0] = j1;
-        m_players[1] = j2;
+        // 4. Creation of the players (Humain vs AI)
+        Player human = new Human("Joueur 1", grid1, ships1);
+        Player ai = new AI("Ordinateur", grid2, ships2);
+
+        // 5. Initial placement
+        human.placeShipFix();
+        ai.placeShipFix();
+
+        m_players[0] = human;
+        m_players[1] = ai;
 
         m_gameObserver = new ArrayList<GameObserver>();
         m_moveHistory = new MoveData();
         m_winner = null;
+    }
+
+    // Helper methode to make the constructor lighter
+    private ArrayList<Ship> createStandardFleet(ShipFactory factory) {
+        ArrayList<Ship> fleet = new ArrayList<>();
+        fleet.add(factory.createShip(AIRCRAFTCARRIER));
+        fleet.add(factory.createShip(CRUISER));
+        fleet.add(factory.createShip(DESTROYER));
+        fleet.add(factory.createShip(SUBMARINE));
+        fleet.add(factory.createShip(TORPEDOBOAT));
+        return fleet;
     }
 
     /**
@@ -158,20 +169,15 @@ public class Game
             observer.updateTurnNumber(turnNumber);
         }
     }
-    public Player getPlayer(int index) {
-        if (index >= 0 && index < m_players.length) {
-            return m_players[index];
-        }
-        return null;
+
+    public Player getHumanPlayer() {
+        return m_players[0];
     }
 
-    public void setPlayers(Player p1, Player p2) {
-        if (m_players == null) {
-            m_players = new Player[2];
-        }
-        this.m_players[0] = p1;
-        this.m_players[1] = p2;
+    public Player getAIPlayer() {
+        return m_players[1];
     }
+
     public void notifyHistory(String message)
     {
         for (GameObserver observer : m_gameObserver)

@@ -255,10 +255,14 @@ package model
         }
         package weapon
         {
-            class Weapon <<abstract>> implements model.PlaceableObject.PlaceableObject
+            class Weapon <<abstract>> extends model.PlaceableObject.PlaceableObject
             {
                 +<<create>>Weapon(type : WeaponType)
                 +use(opponentGrid : Grid, pos : Integer)
+                {abstract} +use(grid : Grid, pos : Integer)
+                +setCallback(callback : WeaponCallback)
+                +notifyFinished()
+                +getType() : WeaponType
             }
             interface WeaponFactory
             {
@@ -371,6 +375,7 @@ package model
             -m_turnNumber : Integer
             -m_currentPlayer : Integer
             +<<create>> Game()
+            +createStandardFleet(factory : ShipFactory) : Ship[]
             +startGame()
             +startBattle()
             +nextTurn()
@@ -378,6 +383,8 @@ package model
             +stopGame(winner : Player)
             +getGameState() : GameState
             +getTurnNumber() : Integer
+            +getHumanPlayer() : Player
+            +getAiPlayer() : Player
             +addObserver(obs : GameObserver)
             +notifyGameState(gamestate: GameState)
             +notifyTurnNumber(turnNumber: Integer)
@@ -433,6 +440,7 @@ model.PlaceableObject.ship.Ship "1" o--> "-m_direction" model.PlaceableObject.sh
 'Weapon relations
 model.PlaceableObject.weapon.Weapon ..> model.grid.Grid : <<uses>>
 model.PlaceableObject.weapon.Weapon "1" *->  "-m_weaponType" model.PlaceableObject.weapon.Weapon : > is of the type\t
+model.PlaceableObject.weapon.Weapon "1" *->  "-m_callback" model.game.WeaponCallback : > calls back\t
 
 'Trap relations
 model.PlaceableObject.trap.Trap "1" *->  "-m_trapType" model.PlaceableObject.trap.TrapType : > is of the type
