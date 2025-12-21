@@ -304,9 +304,9 @@ package model
         {
             #m_name : String
             #m_isTornadoed : Boolean
-            +<<create>>Player(name : String, grid : Grid)
+            +<<create>>Player(name : String, grid : Grid, ships : Ship[*])
             +placeObject(object : PlaceableObject)
-            +placeShipFix()
+            {abstract} +placeShipFix()
             +placeShipRandom()
             +placeTrapFix()
             +placeTrapRandom()
@@ -325,12 +325,14 @@ package model
             +getName() : String
             +getGrid() : Grid
             +getWeaponStrategy() : Weapon
-            +allShipsAreSunk() : boolean
+            +allShipsAreSunk() : Boolean
+            +getShips() : Ship[*]
+            +reset()
         }
         class Human extends Player
         {
-            +<<create>>Human(grid : Grid)
-            +placeFix()
+            +<<create>>Human(name : String, grid : Grid, ships : Ship[*])
+            +placeShipFix()
             +placeBoatCustom(pos : Integer, ship : Ship)
             +placeTrapCustom(pos : Integer, trap : Trap)
             +placeWeaponCustom(pos : Integer, weapon : Weapon)
@@ -345,8 +347,8 @@ package model
         }
         class AI extends Player
         {
-            +<<create>>AI(grid : Grid)
-            +placeBoatFix()
+            +<<create>>AI(name : String, grid : Grid, ships : Ship[*])
+            +placeShipFix()
             +placeTrapFix()
             +setWeaponStrategy(weapon : Weapon)
             +addWeapon(weapon : Weapon)
@@ -475,6 +477,7 @@ model.player.Player "*" *--> "#m_weapons" model.placeableObject.weapon.Weapon : 
 model.player.Player "1" o--> "#m_weaponStrategy" model.placeableObject.weapon.Weapon : > uses the strategy
 model.player.Player "1..*" o--> "#m_observers" model.player.PlayerObserver : > notifies changes
 model.player.Player ..> model.placeableObject.weapon.WeaponType : <<uses>>
+model.player.Player ..> model.placeableObject.PlaceableObject : <<uses>>
 
 'AI relations
 model.player.difficulty .> model.player.AI : <<uses>>
