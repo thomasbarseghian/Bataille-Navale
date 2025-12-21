@@ -12,7 +12,7 @@ public abstract class Weapon extends PlaceableObject
      * Usually the Controller (Player or AI).
      * It is a single reference (Callback pattern).
      */
-    protected WeaponCallback callback;
+    protected WeaponCallback m_callback;
     private WeaponType m_weaponType;
     public Weapon(WeaponType type) {
         super(PlaceableObjectType.WEAPON); // On dit au parent : "Je suis une WEAPON"
@@ -31,7 +31,7 @@ public abstract class Weapon extends PlaceableObject
      * @param callback The controller implementing the interface.
      */
     public void setCallback(WeaponCallback callback) {
-        this.callback = callback;
+        this.m_callback = callback;
     }
 
     /**
@@ -39,9 +39,9 @@ public abstract class Weapon extends PlaceableObject
      * Must be called by the concrete Weapon implementation (e.g., Default)
      * when the logic (and potential animations) are done.
      */
-    protected void notifyFinished() {
-        if (this.callback != null) {
-            this.callback.onAttackFinished();
+    public void notifyFinished() {
+        if (this.m_callback != null) {
+            this.m_callback.onAttackFinished();
         }
     }
 

@@ -124,6 +124,9 @@ public abstract class Player {
             }
             // (Optional) Handle Traps on land here if necessary
 
+            // Since we didn't use weapon.use(), we need to do it manually
+            m_weaponStrategy.notifyFinished();
+
         } else {
 
             // --- WATER LOGIC: SHOOTING ---

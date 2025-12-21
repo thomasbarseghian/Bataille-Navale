@@ -1,7 +1,6 @@
 package controller;
 
 import model.game.Game;
-import model.game.TurnObserver;
 import model.placeableObject.Weapon.WeaponType;
 import model.player.Player;
 
