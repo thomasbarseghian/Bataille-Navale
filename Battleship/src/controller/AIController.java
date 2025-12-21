@@ -1,5 +1,6 @@
 package controller;
 
+import model.grid.Grid;
 import model.placeableObject.Weapon.Weapon;
 import model.placeableObject.Weapon.WeaponType;
 import model.player.Player;
@@ -19,28 +20,36 @@ public class AIController extends AbstractPlayerController {
     @Override
     public void startTurn() {
 
-        // 1. Logic to choose weapon
-        // Try to equip the BOMB from inventory
+        Grid opponentGrid = m_opponent.getGrid();
+        int targetPos;
+        int maxAttempts = 1000; // Safety break to avoid infinite loops if board is full
+
+        // --- INTELLIGENT TARGETING LOGIC ---
+        // We look for a valid target.
+        // The loop continues as long as the picked tile is already hit.
+        do {
+            // Pick a random position between 0 and 99
+            targetPos = (int)(Math.random() * (opponentGrid.getSize() * opponentGrid.getSize()));
+            maxAttempts--;
+        } while (opponentGrid.isTileHit(targetPos) && maxAttempts > 0);
+
+        //
+
+        // --- WEAPON SELECTION ---
+        // Try to use BOMB if available, otherwise DEFAULT.
         boolean hasBomb = m_player.equipWeapon(WeaponType.BOMB);
 
-        if (!hasBomb) {
-            // If equip returned false, it means the AI doesn't have a bomb.
-            // We ensure we are using the default weapon.
+        if (hasBomb) {
+            m_player.equipWeapon(WeaponType.BOMB);
+        } else {
             m_player.equipWeapon(WeaponType.DEFAULT);
         }
 
-        // 2. Logic to pick a target (Random for now)
-        int gridWidth = 10;
-        int targetPos = (int)(Math.random() * (gridWidth * gridWidth));
-
-        // 3. Get the currently equipped weapon (Strategy pattern)
+        // --- EXECUTION ---
         Weapon currentWeapon = m_player.getWeaponStrategy();
-
-        // 4. IMPORTANT: Set THIS controller as the callback listener
-        // This ensures onAttackFinished() (in AbstractController) is called later
         currentWeapon.setCallback(this);
 
-        // 5. Perform the attack
+        // Perform the attack on the valid targetPos found above
         m_player.attack(m_opponent, targetPos);
     }
 }
