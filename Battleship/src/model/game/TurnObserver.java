@@ -1,4 +1,4 @@
-package controller;
+package model.game;
 
 import model.player.Player;
 

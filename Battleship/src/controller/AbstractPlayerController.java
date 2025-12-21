@@ -1,5 +1,6 @@
 package controller;
 
+import model.game.TurnObserver;
 import model.game.WeaponCallback;
 import model.player.Player;
 import java.util.ArrayList;

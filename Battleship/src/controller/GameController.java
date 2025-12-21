@@ -1,9 +1,9 @@
 package controller;
 
 import model.game.Game;
+import model.game.TurnObserver;
 import model.placeableObject.Weapon.WeaponType;
 import model.player.Player;
-import model.game.Game;
 
 public class GameController implements TurnObserver {
 
