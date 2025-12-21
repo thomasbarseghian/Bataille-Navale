@@ -2,14 +2,14 @@ package model.placeableObject.Weapon;
 
 public class WeaponFactory {
     public WeaponFactory(){
-
     }
+
     public Weapon createWeapon(WeaponType weaponType){
         switch(weaponType) {
             case BOMB:
-                //return new Bomb();
+                return new Bomb();
             case SONAR:
-                //return new Sonar();
+                return new Sonar();
             case DEFAULT:
                 return new Default();
             default:
