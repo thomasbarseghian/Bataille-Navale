@@ -7,6 +7,11 @@ import model.player.Player;
 
 public class HumanController extends AbstractPlayerController {
 
+    private GameController m_gameController;
+
+    public void setGameController(GameController gameController) {
+        this.m_gameController = gameController;
+    }
     /**
      * Called by GameController to unlock the UI for the user.
      */
@@ -23,12 +28,16 @@ public class HumanController extends AbstractPlayerController {
         // 1. Get current weapon strategy
         Weapon currentWeapon = m_player.getWeaponStrategy();
 
+        boolean isHit = (target.getGrid().getObjectAt(pos) != null);
         // 2. Set THIS controller as the callback listener
         // (The method onAttackFinished() from AbstractController will be called)
         currentWeapon.setCallback(this);
 
         // 3. Execute attack
         m_player.attack(target, pos);
+        if (m_gameController != null) {
+            m_gameController.notifyAttackResult(m_player, pos, currentWeapon.getType(), isHit);
+        }
     }
 
     /**
