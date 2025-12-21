@@ -15,8 +15,8 @@ public class PlacementController {
     }
 
     /**
-     * Place les bateaux automatiquement (Niveau 1)
-     * Utilisation de la Factory pour créer les navires.
+     * Automatically places ships (Level 1)
+     * Using the Factory to create ships.
      */
     public void placeShipsFixed() {
         // 1. Retrieve the Human Player (Index 0)
@@ -35,15 +35,15 @@ public class PlacementController {
         }
     }
     private void placeBonusItems(Grid grid) {
-        // 1. Récupérer toutes les cases de l'île
+        // 1. Retrieve all island tiles
         ArrayList<Integer> landTiles = grid.getLandTiles();
 
         if (!landTiles.isEmpty()) {
-            // 2. Choisir une case au hasard
+            // 2. Choose a random tile
             int randomIndex = (int) (Math.random() * landTiles.size());
             int position = landTiles.get(randomIndex);
 
-            // 3. Créer la bombe et la poser
+            // 3. Create the bomb and place it
             Bomb hiddenBomb = new Bomb();
             hiddenBomb.setPosition(position);
 

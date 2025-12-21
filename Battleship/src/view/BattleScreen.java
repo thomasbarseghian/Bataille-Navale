@@ -19,7 +19,7 @@ public class BattleScreen extends JPanel implements GameObserver {
     private JLabel m_enemyStatsLabel;
     private JTextArea m_gameLog;
 
-    // NOUVEAU : UI pour les armes
+    // NEW: UI for weapons
     private JLabel m_currentWeaponLabel;
     private JButton m_btnStandard;
     private JButton m_btnBomb;
@@ -29,16 +29,16 @@ public class BattleScreen extends JPanel implements GameObserver {
 
         this.setLayout(new BorderLayout());
 
-        // --- TOP : Tour + Armes ---
+        // --- TOP: Turn + Weapons ---
         JPanel topPanel = new JPanel(new BorderLayout());
 
-        // Tour au centre
+        // Turn in the center
         m_turnLabel = new JLabel("Tour actuel : 1");
         m_turnLabel.setFont(new Font("Arial", Font.BOLD, 18));
         m_turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.add(m_turnLabel, BorderLayout.CENTER);
 
-        // Panneau Armes à droite (NOUVEAU)
+        // Weapon Panel on the right (NEW)
         JPanel weaponPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         weaponPanel.setBorder(BorderFactory.createTitledBorder("Arsenal"));
 
@@ -82,8 +82,8 @@ public class BattleScreen extends JPanel implements GameObserver {
             int pos = (int) btn.getClientProperty("position");
             m_controller.onEnemyGridClicked(pos);
 
-            // IMPORTANT : Après un tir, on remet l'affichage à "Standard"
-            // car les armes spéciales (Bombe) sont à usage unique.
+            // IMPORTANT: After a shot, reset the display to "Standard"
+            // because special weapons (Bomb) are single-use.
             updateWeaponLabel(WeaponType.DEFAULT);
         });
 
@@ -113,9 +113,9 @@ public class BattleScreen extends JPanel implements GameObserver {
         updateStats(); // Initial update
     }
 
-    // NOUVEAU : Méthode pour gérer le clic sur une arme
+    // NEW: Method to handle clicking on a weapon
     private void selectWeapon(WeaponType type) {
-        // On demande au contrôleur si on peut équiper l'arme
+        // We ask the controller if we can equip the weapon
         boolean success = m_controller.onWeaponSelected(type);
 
         if (success) {
@@ -123,7 +123,7 @@ public class BattleScreen extends JPanel implements GameObserver {
         }
     }
 
-    // Change visuellement le label de l'arme
+    // Visually changes the weapon label
     private void updateWeaponLabel(WeaponType type) {
         m_currentWeaponLabel.setText("Arme : " + type);
         if (type == WeaponType.BOMB) {

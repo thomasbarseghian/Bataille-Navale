@@ -45,7 +45,7 @@ public abstract class Weapon extends PlaceableObject
         }
     }
 
-    // Force chaque sous-classe à déclarer son type
+    // Each class needs to declare its type
     public WeaponType getType(){
         return this.m_weaponType;
     }

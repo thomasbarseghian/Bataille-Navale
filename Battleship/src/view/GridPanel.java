@@ -15,38 +15,38 @@ public class GridPanel extends JPanel implements GridObserver {
 
     private Grid m_gridModel;
     private ArrayList<JButton> m_buttons;
-    private boolean m_hideShips; // True pour la grille ennemie
+    private boolean m_hideShips; // True for the enemy grid
     private int m_size;
 
     /**
-     * @param grid Le modèle de la grille à afficher
-     * @param hideShips Si true, cache les bateaux non touchés (brouillard de guerre)
+     * @param grid The model of the grid to display
+     * @param hideShips If true, hides untouched ships (fog of war)
      */
     public GridPanel(Grid grid, boolean hideShips) {
         this.m_gridModel = grid;
         this.m_hideShips = hideShips;
-        this.m_size = grid.getSize(); // Nécessite le getter ajouté dans Grid
+        this.m_size = grid.getSize(); // Requires the getter added in Grid
         this.m_buttons = new ArrayList<>();
 
-        // On s'abonne pour recevoir les mises à jour du modèle
+        // We subscribe to receive updates from the model
         this.m_gridModel.addObserver(this);
 
         initLayout();
     }
 
     private void initLayout() {
-        // Configuration du Layout (Grille carrée)
+        // Layout Configuration (Square Grid)
         this.setLayout(new GridLayout(m_size, m_size));
 
-        // Création des boutons pour chaque case
+        // Creating buttons for each tile
         for (int i = 0; i < m_size * m_size; i++) {
             JButton btn = new JButton();
-            btn.setPreferredSize(new Dimension(40, 40)); // Taille d'une case
+            btn.setPreferredSize(new Dimension(40, 40)); // Tile size
 
-            // On stocke la position (index) dans le bouton pour la retrouver au clic
+            // Storing the position (index) in the button to retrieve it on click
             btn.putClientProperty("position", i);
 
-            // Design de base
+            // Basic Design
             btn.setOpaque(true);
             btn.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
@@ -54,12 +54,12 @@ public class GridPanel extends JPanel implements GridObserver {
             this.add(btn);
         }
 
-        // Premier affichage
+        // First display
         refreshGrid();
     }
 
     /**
-     * Met à jour l'affichage de toute la grille en fonction des données du modèle
+     * Updates the display of the entire grid based on the model data
      */
     public void refreshGrid() {
         for (int i = 0; i < m_buttons.size(); i++) {
@@ -68,7 +68,7 @@ public class GridPanel extends JPanel implements GridObserver {
     }
 
     /**
-     * Met à jour une seule case (optimisation)
+     * Updates a single tile (optimization)
      */
     private void updateSingleTile(int pos) {
         Tile tile = m_gridModel.getTile(pos);
@@ -76,53 +76,53 @@ public class GridPanel extends JPanel implements GridObserver {
 
         boolean isHit = tile.isHit();
         boolean hasObject = (tile.getObject() != null);
-        TileType type = tile.getTileType(); // <--- ON RECUPÈRE LE TYPE ICI
+        TileType type = tile.getTileType(); // <--- WE RETRIEVE THE TYPE HERE
 
-        // --- Logique d'affichage (Couleurs) ---
+        // --- Display Logic (Colors) ---
 
         if (isHit) {
-            // Cas 1 : La case a été touchée
-            btn.setEnabled(false); // On ne peut plus cliquer dessus
+            // Case 1: The tile has been hit
+            btn.setEnabled(false); // We can no longer click on it
 
             if (hasObject) {
-                // TOUCHÉ !
+                // HIT!
                 btn.setBackground(Color.RED);
                 btn.setText("X");
             } else {
-                // DANS LE VIDE
+                // MISS
                 btn.setText("O");
-                // Si on a tiré dans le sable (Terre) ou dans l'eau
+                // If we shot in the sand (Land) or in the water
                 if (type == TileType.LAND) {
-                    btn.setBackground(new Color(139, 69, 19)); // Marron (Terre creusée)
+                    btn.setBackground(new Color(139, 69, 19)); // Brown (Dug earth)
                 } else {
-                    btn.setBackground(new Color(50, 50, 200)); // Bleu foncé (Plouf)
+                    btn.setBackground(new Color(50, 50, 200)); // Dark blue (Splash)
                 }
             }
         } else {
-            // Cas 2 : La case n'a pas encore été touchée
+            // Case 2: The tile has not been hit yet
             btn.setEnabled(true);
             btn.setText("");
 
             if (hasObject && !m_hideShips) {
-                // C'est un bateau ET on a le droit de le voir
+                // It is a ship AND we are allowed to see it
                 if(tile.getObject().getObjectType() == PlaceableObjectType.SHIP) {
                     btn.setBackground(Color.DARK_GRAY);
                 } else {
                     btn.setBackground(Color.ORANGE);
                 }
             } else {
-                // C'est vide (ou caché) -> On affiche le TERRAIN
+                // It is empty (or hidden) -> We display the TERRAIN
                 if (type == TileType.LAND) {
-                    btn.setBackground(new Color(238, 214, 175)); // Beige (Sable / ILE)
+                    btn.setBackground(new Color(238, 214, 175)); // Beige (Sand / ISLAND)
                 } else {
-                    btn.setBackground(new Color(135, 206, 235)); // Bleu ciel (EAU)
+                    btn.setBackground(new Color(135, 206, 235)); // Sky blue (WATER)
                 }
             }
         }
     }
 
     /**
-     * Permet au contrôleur d'ajouter une action quand on clique sur une case
+     * Allows the controller to add an action when a tile is clicked
      */
     public void addInteractionListener(ActionListener listener) {
         for (JButton btn : m_buttons) {
@@ -132,7 +132,7 @@ public class GridPanel extends JPanel implements GridObserver {
 
     @Override
     public void updateTileHit(int pos) {
-        // Appelé automatiquement par Grid via notifyTileHit
+        // Called automatically by Grid via notifyTileHit
         updateSingleTile(pos);
     }
 }

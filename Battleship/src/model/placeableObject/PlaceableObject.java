@@ -1,14 +1,13 @@
 package model.placeableObject;
 
 public abstract class PlaceableObject {
-    // 1. On met tout en private !
     private int m_position;
     private PlaceableObjectType m_objectType;
 
-    // 2. Le constructeur demande le type
+    // The conqstructor takes the type
     public PlaceableObject(PlaceableObjectType type) {
-        this.m_position = -1; // Par défaut
-        this.m_objectType = type; // On initialise l'attribut privé ici
+        this.m_position = -1; // default
+        this.m_objectType = type;
     }
 
     public int getPosition() {
