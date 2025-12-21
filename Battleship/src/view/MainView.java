@@ -1,7 +1,7 @@
 package view;
 
 import controller.ConfigController;
-import controller.MainController;
+import controller.BattleController;
 import controller.PlacementController;
 
 import javax.swing.*;
@@ -11,7 +11,7 @@ public class MainView extends JFrame {
     private CardLayout cardLayout;
     private JPanel root;
 
-    public MainView(ConfigController configController, PlacementController placementController, MainController mainController) {
+    public MainView(ConfigController configController, PlacementController placementController, BattleController battleController) {
         this.cardLayout = new CardLayout();
         this.root = new JPanel(cardLayout);
 

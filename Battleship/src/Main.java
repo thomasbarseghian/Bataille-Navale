@@ -1,5 +1,5 @@
 import controller.ConfigController;
-import controller.MainController;
+import controller.BattleController;
 import controller.PlacementController;
 import controller.ScreenController;
 import model.game.Game;
@@ -11,9 +11,9 @@ public class Main {
 
         ConfigController configController = new ConfigController(gameModel);
         PlacementController placementController = new PlacementController();
-        MainController mainController = new MainController();
+        BattleController battleController = new BattleController();
 
-        MainView masterView = new MainView(configController,placementController,mainController);
+        MainView masterView = new MainView(configController,placementController, battleController);
 
 
         ScreenController screenController = new ScreenController(masterView);

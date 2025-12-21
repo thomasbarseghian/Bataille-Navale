@@ -5,6 +5,7 @@ import model.placeableObject.PlaceableObject;
 import model.placeableObject.Trap.Trap;
 import model.placeableObject.Weapon.Default;
 import model.placeableObject.Weapon.Weapon;
+import model.placeableObject.Weapon.WeaponType;
 import model.placeableObject.ship.Ship;
 
 import java.util.ArrayList;
@@ -47,9 +48,30 @@ public abstract class Player {
 
     //public abstract void placeWeaponFix();
 
+
     public void setWeaponStrategy(Weapon weapon)
     {
         m_weaponStrategy = weapon;
+        //NotifyInventoryChanged();
+    }
+
+    public boolean equipWeapon(WeaponType targetType) {
+
+        // Cas spécial : Si on veut remettre l'arme par défaut
+        if (targetType == WeaponType.DEFAULT) {
+            m_weaponStrategy = new Default(); // Arme par défaut
+            return true;
+        }
+
+        // Recherche dans l'inventaire pour les armes spéciales
+        for (Weapon w : m_weapons) {
+            // Comparaison d'Enum
+            if (w.getType() == targetType) {
+                setWeaponStrategy(w);
+                return true; // Arme trouvée et équipée
+            }
+        }
+        return false; // Le joueur ne possède pas cette arme
     }
 
     public void addWeapon(Weapon weapon)
@@ -87,6 +109,13 @@ public abstract class Player {
         //PlaceableObject obj = opponentGrid.getObjectAt(pos);
         //notifyAttack(pos, weapon, obj.getType());
         //checkIfTrapTriggered(opponent, pos);
+
+        // 5. Verifications pour armes spéciale
+        // Si l'arme n'est pas l'arme par défaut, on la retire de l'inventaire
+        if (m_weaponStrategy.getType() != WeaponType.DEFAULT) {
+            m_weapons.remove(m_weaponStrategy); // On l'enlève de l'inventaire
+            m_weaponStrategy = new Default(); // Arme par défaut
+        }
     }
 
     public void notifyAttack(int pos, Weapon weapon)
@@ -129,5 +158,10 @@ public abstract class Player {
             }
         }
         return true;
+    }
+
+    // In class Player.java
+    public Weapon getWeaponStrategy() {
+        return m_weaponStrategy;
     }
 }
