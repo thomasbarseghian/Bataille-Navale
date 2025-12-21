@@ -18,9 +18,4 @@ public class Default extends Weapon{
         // On signale que l'action est finie
         notifyFinished();
     }
-
-    @Override
-    public WeaponType getType() {
-        return WeaponType.DEFAULT;
-    }
 }
