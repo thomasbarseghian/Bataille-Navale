@@ -112,16 +112,19 @@ package model
             -m_size : Integer
             +<<create>>Grid(size : Integer)
             +hitTile(pos:Integer)
-            +placeObject(object : PlaceableObject) : Boolean
+            +putPlaceObjectInTile(object : PlaceableObject)
             +attackAt(pos : Integer, Weapon weapon) : PlaceableObject
             +addObserver(obs : GridObserver)
             +notifyTileHit(pos : Integer)
             +getTile(pos : Integer) : Tile
+            +getSize() : Integer
             +isTileHit(pos : Integer) : Boolean
             +isLand(pos : Integer) : Boolean
             +getObjectAt(pos : Integer) : PlaceableObject
             +setTileHit(pos : Integer)
-            +isValidPos(pos : Integer)
+            -isValidPos(pos : Integer) : Boolean
+            +reset()
+            +getLandTiles() : Integer[*]
         }
 
         interface GridObserver <<interface>>
@@ -133,12 +136,14 @@ package model
         {
             -m_isHit : Boolean
             +<<create>>Tile(type : TileType)
-            +getObject() : PlaceableObject
-            +getTileType() : TileType
-            +isHit() : Boolean
-            +setObject(object : PlaceableObject)
             +hit()
+            +isHit() : Boolean
             +isLand() : Boolean
+            +getTileType() : TileType
+            +getObject() : PlaceableObject
+            +setObject(object : PlaceableObject)
+            +isEmpty() : Boolean
+            +reset()
         }
         enum TileType
         {
@@ -435,11 +440,11 @@ model.game.MoveData "*" *--> "-m_weapon" model.placeableObject.weapon.WeaponType
 model.game.MoveData ..> model.placeableObject.weapon.WeaponFactory : <<uses>>
 
 'Grid relations
-model.grid.Grid "*" *--> "-m_grid" model.grid.Tile : > is made of
+model.grid.Grid "1" *--> "-m_grid" model.grid.Tile : > is made of
 model.grid.Grid "*" o--> "-m_gridObservers" model.grid.GridObserver : > notify
 
 'Tile relations
-model.grid.Tile "1" *--> "-m_object" model.placeableObject.PlaceableObject: > has elements of the type
+model.grid.Tile "0..1" *--> "-m_object" model.placeableObject.PlaceableObject: > has elements of the type
 model.grid.Tile "1" *->  "-m_tileType" model.grid.TileType : > is of the type\t
 
 'Ship relations
