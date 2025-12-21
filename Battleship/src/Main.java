@@ -6,58 +6,63 @@ import model.placeableObject.ship.ShipFactory;
 import model.placeableObject.ship.ShipType;
 import model.player.AI;
 import model.player.Human;
-import model.player.Player;
 import view.MainView;
 
 import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Lancement de la Bataille Navale - Niveau 1...");
+        System.out.println("Lancement de la Bataille Navale - Nouvelle Architecture...");
 
         // --- 1. INITIALISATION DU MODÈLE ---
 
-        // A. Création des flottes (5 navires chacun)
         ShipFactory factory = new ShipFactory();
-        ArrayList<Ship> humanShips = createStandardFleet(factory);
-        ArrayList<Ship> aiShips = createStandardFleet(factory);
 
-        // B. Création des Grilles
+        // Création des Grilles
         Grid humanGrid = new Grid(10);
         Grid aiGrid = new Grid(10);
 
-        // C. Création des Joueurs
+        // Création des listes de navires
+        ArrayList<Ship> humanShips = createStandardFleet(factory);
+        ArrayList<Ship> aiShips = createStandardFleet(factory);
+
+        // Création des Joueurs
         Human humanPlayer = new Human("Joueur 1", humanGrid, humanShips);
         AI aiPlayer = new AI("Ordinateur", aiGrid, aiShips);
 
-        // D. Création du Jeu
+        // IMPORTANT : Placement initial des bateaux (pour que le jeu ne soit pas vide)
+        humanPlayer.placeShipFix();
+        aiPlayer.placeShipFix();
+
+        // Création du Jeu
         Game game = new Game();
-        game.setPlayers(humanPlayer, aiPlayer); // On injecte nos joueurs configurés
+        game.setPlayers(humanPlayer, aiPlayer);
 
-        // --- 2. CONTRÔLEURS LOGIQUES (Cerveau) ---
+        // --- 2. CONTRÔLEURS LOGIQUES ---
 
+        // A. Human Controller
         HumanController humanLogic = new HumanController();
         humanLogic.setPlayer(humanPlayer);
+        // Note: On ne set plus GameController ici avec la nouvelle structure
 
+        // B. AI Controller
         AIController aiLogic = new AIController();
-        aiLogic.setPlayers(aiPlayer, humanPlayer); // L'IA attaque l'Humain
+        aiLogic.setPlayer(aiPlayer);
+        aiLogic.setOpponent(humanPlayer); // <--- NOUVEAU : L'IA doit connaître sa cible
 
-        // Chef d'orchestre du jeu (Gère les tours)
-        GameController gameLogic = new GameController(humanLogic, aiLogic);
-        gameLogic.setGame(game);
+        // C. Game Controller (Chef d'orchestre)
+        // Le constructeur a changé : il prend (Game, HumanController, AIController)
+        GameController gameLogic = new GameController(game, humanLogic, aiLogic);
 
-        // On relie les logiques au chef d'orchestre
-        humanLogic.setGameController(gameLogic);
-        aiLogic.setGameController(gameLogic);
-
-        // --- 3. CONTRÔLEURS D'INTERFACE (Glu) ---
+        // --- 3. CONTRÔLEURS D'INTERFACE ---
 
         ConfigController configCtrl = new ConfigController(game);
 
-        // Placement (Niveau 1 : Fixe)
-        PlacementController placementCtrl = new PlacementController(game, humanGrid);
+        // Placement Controller
+        PlacementController placementCtrl = new PlacementController(game);
 
-        // Bataille (Gère les clics sur la grille ennemie)
+        // Battle Controller
+        // Il a besoin du humanLogic pour relayer les clics
         BattleController battleCtrl = new BattleController(humanLogic, aiPlayer);
 
 
@@ -68,12 +73,9 @@ public class Main {
         ScreenController screenCtrl = new ScreenController(view, game);
 
         // --- 6. GO ! ---
-        game.startGame(); // Démarre en CONFIGURATION
+        game.startGame();
     }
 
-    /**
-     * Helper pour créer la flotte standard de 5 navires
-     */
     private static ArrayList<Ship> createStandardFleet(ShipFactory factory) {
         ArrayList<Ship> fleet = new ArrayList<>();
         fleet.add(factory.createShip(ShipType.AIRCRAFTCARRIER));

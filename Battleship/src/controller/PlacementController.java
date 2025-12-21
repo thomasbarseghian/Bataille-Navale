@@ -7,11 +7,9 @@ import model.player.Player;
 
 public class PlacementController {
     private Game m_game;
-    private Grid m_playerGrid;
 
-    public PlacementController(Game game, Grid playerGrid) {
+    public PlacementController(Game game) {
         this.m_game = game;
-        this.m_playerGrid = playerGrid;
     }
 
     /**
