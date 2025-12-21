@@ -121,6 +121,17 @@ public class Game
         return m_players[m_currentPlayer].allShipsAreSunk();
     }
 
+    /**
+     * Ends the game and notifies observers.
+     * @param winner The player who won (to display in the view).
+     */
+    public void stopGame(Player winner) {
+        m_state = GameState.END;
+        notifyGameState(m_state);
+
+        //NEED A NOTIFY HERE ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+
     public void addObserver(GameObserver observer)
     {
         m_gameObserver.add(observer);

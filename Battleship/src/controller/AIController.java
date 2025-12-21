@@ -1,54 +1,46 @@
 package controller;
 
-import model.game.WeaponCallback;
-import model.player.Player; // Import Player
 import model.placeableObject.Weapon.Weapon;
+import model.placeableObject.Weapon.WeaponType;
+import model.player.Player;
 
-public class AIController implements WeaponCallback {
+public class AIController extends AbstractPlayerController {
 
-    private GameController gameController;
-    private Player m_ai; // The AI Player Model
-    private Player m_opponent; // The Human Player Model (Target)
+    private Player m_opponent; // The AI needs to know who to attack
 
-    // Setters to initialize data
-    public void setGameController(GameController gc) { this.gameController = gc; }
-
-    // We inject the models here
-    public void setPlayers(Player aiPlayer, Player humanPlayer) {
-        this.m_ai = aiPlayer;
-        this.m_opponent = humanPlayer;
+    public void setOpponent(Player opponent) {
+        this.m_opponent = opponent;
     }
-
-    // Helper for GameController to retrieve the model
-    public Player getPlayer() { return m_ai; }
 
     /**
-     * Triggered by GameController when it's time for the AI to play.
+     * Triggered by GameController.
+     * Logic: Try to use BOMB if available, otherwise DEFAULT.
      */
+    @Override
     public void startTurn() {
 
-        // 1. Logic to pick a target (Random for now)
-        // Ensure we pick a valid spot on the opponent's grid
-        int gridWidth = 10; // The grid always has a width of 10
+        // 1. Logic to choose weapon
+        // Try to equip the BOMB from inventory
+        boolean hasBomb = m_player.equipWeapon(WeaponType.BOMB);
+
+        if (!hasBomb) {
+            // If equip returned false, it means the AI doesn't have a bomb.
+            // We ensure we are using the default weapon.
+            m_player.equipWeapon(WeaponType.DEFAULT);
+        }
+
+        // 2. Logic to pick a target (Random for now)
+        int gridWidth = 10;
         int targetPos = (int)(Math.random() * (gridWidth * gridWidth));
 
-        // 2. Logic to choose a weapon (AI logic)
-        // For now, AI uses whatever is currently equipped (Default)
-        Weapon currentWeapon = m_ai.getWeaponStrategy(); // You might need a getter in Player
+        // 3. Get the currently equipped weapon (Strategy pattern)
+        Weapon currentWeapon = m_player.getWeaponStrategy();
 
-        // 3. IMPORTANT: The AI sets itself as the listener for the weapon
-        // This ensures onAttackFinished() is called here when the weapon is done
+        // 4. IMPORTANT: Set THIS controller as the callback listener
+        // This ensures onAttackFinished() (in AbstractController) is called later
         currentWeapon.setCallback(this);
 
-        // 4. Perform the attack using the Player Model
-        // The Player model handles inventory removal, notifications, etc.
-        m_ai.attack(m_opponent, targetPos);
-    }
-
-    @Override
-    public void onAttackFinished() {
-        // The weapon animation/logic is done.
-        // Notify GameController that AI turn is over.
-        gameController.endAiTurn();
+        // 5. Perform the attack
+        m_player.attack(m_opponent, targetPos);
     }
 }
