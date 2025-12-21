@@ -117,6 +117,11 @@ package model
             +addObserver(obs : GridObserver)
             +notifyTileHit(pos : Integer)
             +getTile(pos : Integer) : Tile
+            +isTileHit(pos : Integer) : Boolean
+            +isLand(pos : Integer) : Boolean
+            +getObjectAt(pos : Integer) : PlaceableObject
+            +setTileHit(pos : Integer)
+            +isValidPos(pos : Integer)
         }
 
         interface GridObserver <<interface>>
@@ -130,9 +135,10 @@ package model
             +<<create>>Tile(type : TileType)
             +getObject() : PlaceableObject
             +getTileType() : TileType
-            +getIsHit() : Boolean
+            +isHit() : Boolean
             +setObject(object : PlaceableObject)
             +hit()
+            +isLand() : Boolean
         }
         enum TileType
         {
@@ -266,7 +272,9 @@ package model
             class Bomb extends Weapon
             {
                 +<<create>>Bomb()
+                +getType() : WeaponType
                 +use(opponentGrid : Grid, pos : Integer) : Boolean
+                +isInsideGrid(x : Integer, y : Integer, size : Integer) : Boolean
             }
             class Sonar extends Weapon
             {
