@@ -54,18 +54,18 @@ public class Game
     }
 
     /**
-     * Lancement du placement
-     * On appelle cette méthode pour commencer le placement
+     * Notify the game is state of CONFIGURATION.
      */
-    public void startGame()
-    {
-        // Check if the game is currently in the configuration phase
-        if (m_state == GameState.CONFIGURATION)
-        {
-            // Transition to the PLACEMENT state so players can position their ships
-            m_state = GameState.PLACEMENT;
+    public void startGame() {
+        notifyGameState(GameState.CONFIGURATION);
+    }
 
-            // Notify the view/observers that the state has changed
+    /**
+     * Called bu ConfigController "Valider" / "Commencer le placement" is clicked
+     */
+    public void startPlacement() {
+        if (m_state == GameState.CONFIGURATION) {
+            m_state = GameState.PLACEMENT;
             notifyGameState(m_state);
         }
     }
@@ -123,5 +123,11 @@ public class Game
         {
             observer.updateTurnNumber(turnNumber);
         }
+    }
+    public Player getPlayer(int index) {
+        if (index >= 0 && index < m_players.length) {
+            return m_players[index];
+        }
+        return null;
     }
 }
