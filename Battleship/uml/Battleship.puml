@@ -54,22 +54,36 @@ package controller
 {
     class ScreenController implements .model.game.GameObserver
     {
-        +updateGameState(gamestate: GameState)
+        +<<create>>ScreenController(view : MainView, game : Game)
+        +updateGameState(state : GameState)
+        +updateTurnNumber(turnNumber : Integer)
+        +updateHistory(logMessage : String)
     }
     class BattleController
     {
-
+        +<<create>>BattleController(humanLogic : HumanController, aiPlayer : Player)
+        +onEnemyGridClicked(position : Integer)
+        +onWeaponSelected(type : WeaponType) : Boolean
+        +getHumanGrid() : Grid
+        +getAiGrid() : Grid
+        +getHumanStatsText() : String
+        +getAiStatsText() : String
+        -generateStatsHTML(p : Player, title : String) : String
     }
     class PlacementController
     {
-
+        +<<create>>PlacementController(game : Game)
+        +placeShipsFixed()
+        -placeBonusItems(grid : Grid)
+        +startGame()
     }
     class ConfigController
     {
-
+        +<<create>>ConfigController(gameModel : Game)
+        +applyConfiguration()
     }
 
-    class HumanController
+    class HumanController extends WeaponCallback
     {
         +setGameController(gameController : GameController)
         +setPlayer(p : Player)
@@ -79,10 +93,10 @@ package controller
         +handleWeaponEquip(weaponType : WeaponType)
         +onAttackFinished()
     }
-    class AIController
+    class AIController extends WeaponCallback
     {
         +setGameController(gameController : GameController)
-        +setPlayers(aiPlayer : Player, humanPlayer : Player)
+        +setOpponent(opponent : Player)
         +getPlayer() : Player
         +startTurn()
         +onAttackFinished()
@@ -93,13 +107,26 @@ package controller
     }
 
     abstract class AbstractPlayerController <<abstract>>{
-        # m_player : Player
-        # m_observers : List<TurnObserver>
-        + addObserver(TurnObserver)
-        + removeObserver(TurnObserver)
+        +<<create>>AbstractPlayerController()
+        +setPlayer(player : Player)
+        +getPlayer() : Player
+        +addObserver(observer : TurnObserver)
+        +removeObserver(observer : TurnObserver)
         # notifyTurnEnded()
         + onAttackFinished()
         {abstract} + startTurn()
+    }
+    class GameController
+    {
+        +<<create>>GameController(game : Game, player : HumanController, ai : AIController)
+        +setGame(game : Game)
+        +onTurnEnded(playerWhoFinished : Player)
+        -endHumanTurn()
+        -endAiTurn()
+        +onSpecialWeaponClicked(type : WeaponType)
+        +onBombButtonClicked()
+        +onTileClick(pos : Integer, targetPlayer : Player)
+        +notifyAttackResult(attacker : Player, pos : Integer, weapon : WeaponType, isHit : Boolean)
     }
 }
 
@@ -530,11 +557,12 @@ view.EndScreen .up.|> .model.player.PlayerObserver
 'AbstractPlayerController relations
 controller.AbstractPlayerController ..|> model.game.WeaponCallback
 controller.AbstractPlayerController o--> "0..*" controller.TurnObserver : > notifies
+controller.AbstractPlayerController "1" o--> "#m_player" model.player.Player : > controls
+controller.AbstractPlayerController "*" o--> "#m_observers" controller.TurnObserver : > notifies
 
 'AIController relations
 controller.AIController --|> controller.AbstractPlayerController
 controller.AIController "1" o--> "-gameController" controller.GameController : > notifies end of turn
-controller.AIController "1" o--> "-m_ai" model.player.Player : > controls
 controller.AIController "1" o--> "-m_opponent" model.player.Player : > targets
 controller.AIController ..> model.placeableObject.weapon.Weapon : <<uses>>
 controller.AIController ..> model.placeableObject.weapon.WeaponType : <<uses>>
@@ -543,7 +571,6 @@ controller.AIController ..> model.placeableObject.weapon.WeaponType : <<uses>>
 'HumanController relations
 controller.HumanController --|> controller.AbstractPlayerController
 controller.HumanController "1" o--> "-gameController" controller.GameController : > notifies end of turn
-controller.HumanController "1" o--> "-m_player" model.player.Player : > controls
 controller.HumanController ..> model.placeableObject.weapon.Weapon : <<uses>>
 controller.HumanController ..> model.placeableObject.weapon.WeaponType : <<uses>>
 
@@ -554,4 +581,22 @@ controller.GameController "1" o--> "-m_aiController" controller.AIController : >
 controller.GameController "1" o--> "-m_currentPlayer" model.player.Player : > tracks active player
 controller.GameController ..> model.placeableObject.weapon.WeaponType : <<uses>>
 controller.GameController "1" o--> "-m_game" model.game.Game : > is the active game
+controller.GameController ..> model.placeableObject.weapon.WeaponType : <<uses>>
+
+'BattleController relations
+controller.BattleController "1" o--> "-m_humanLogic" controller.HumanController : > delegates to
+controller.BattleController "1" o--> "-m_aiPlayer" model.player.Player : > targets
+
+'ConfigController relations
+controller.ConfigController "1" o--> "-gameModel" model.game.Game : > configures
+
+'PlacementController relations
+controller.PlacementController "1" o--> "-m_game" model.game.Game : > manages
+' Dépendance car il fait "new Bomb()"
+controller.PlacementController ..> model.placeableObject.weapon.Bomb : <<instantiates>>
+
+'ScreenController relations
+controller.ScreenController ..|> model.game.GameObserver
+controller.ScreenController "1" o--> "-m_view" view.MainView : > updates
+controller.ScreenController "1" o--> "-m_game" model.game.Game : > observes
 @enduml
