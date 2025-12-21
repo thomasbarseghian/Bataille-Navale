@@ -1,7 +1,7 @@
 package view;
 
 import controller.ConfigController;
-import controller.MainController;
+import controller.BattleController;
 import controller.PlacementController;
 import model.game.Game;
 import model.grid.Grid;
@@ -14,7 +14,7 @@ public class MainView extends JFrame {
     private JPanel root;
 
     // J'ai ajouté Grid et Game aux paramètres pour pouvoir créer les écrans correctement
-    public MainView(ConfigController configController, PlacementController placementController, MainController mainController, Grid humanGrid, Game game) {
+    public MainView(ConfigController configController, PlacementController placementController, BattleController battleController, Grid humanGrid, Game game) {
         this.cardLayout = new CardLayout();
         this.root = new JPanel(cardLayout);
 

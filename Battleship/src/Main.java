@@ -1,5 +1,5 @@
 import controller.ConfigController;
-import controller.MainController;
+import controller.BattleController;
 import controller.PlacementController;
 import controller.ScreenController;
 import model.game.Game;
@@ -17,11 +17,11 @@ public class Main {
         // 2. Contrôleurs
         ConfigController configCtrl = new ConfigController(game);
         PlacementController placementCtrl = new PlacementController(game, humanGrid);
-        MainController mainCtrl = new MainController(); // Création vide pour l'instant
+        BattleController battleCtrl = new BattleController(); // Création vide pour l'instant
 
         // 3. Vue
         // On passe TOUS les contrôleurs + la grille + le jeu à la vue principale
-        MainView view = new MainView(configCtrl, placementCtrl, mainCtrl, humanGrid, game);
+        MainView view = new MainView(configCtrl, placementCtrl, battleCtrl, humanGrid, game);
 
         // 4. Contrôleur d'écran (Gestion des changements d'écran)
         ScreenController screenCtrl = new ScreenController(view, game);
