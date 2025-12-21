@@ -26,4 +26,11 @@ public class Tile {
     public boolean getIsHit(){
         return this.m_isHit;
     }
+
+    public boolean isEmpty() {
+        if(m_object!=null){
+            return false;
+        }
+        return true;
+    }
 }
