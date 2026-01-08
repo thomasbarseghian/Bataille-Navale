@@ -61,10 +61,11 @@ Cliquer sur Run
 L’application se lance (interface graphique ou terminal selon la vue utilisée)
 
 ## Structure du projet  
-  
+
+```text
 src/  
  ├── model/        # Logique métier (jeu, grille, joueurs, objets)  
  ├── view/         # Interfaces utilisateur (écrans, affichage)  
  ├── controller/   # Contrôleurs (MVC)  
- └── Main          #Pour lancer le jeu  
-  
+ └── Main          #Pour lancer le jeu
+```
