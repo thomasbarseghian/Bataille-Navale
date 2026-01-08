@@ -72,9 +72,9 @@ Ces choix permettent d’ajouter facilement de nouveaux types de bateaux, d’ar
 ## Aperçu du jeu
 
 
-![Menu de placement](screenshots/placement.png)
-![Interface de jeu en debut de partie](screenshots/debutPartie.png)
-![Interface de jeu en cours de partie](screenshots/partieEnCours.png)
+![Menu de placement](img/placement.png)
+![Interface de jeu en debut de partie](img/debutPartie.png)
+![Interface de jeu en cours de partie](img/partieEnCours.png)
 
 ## Licence  
   
