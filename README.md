@@ -69,17 +69,6 @@ Ces choix permettent d’ajouter facilement de nouveaux types de bateaux, d’ar
 
 ---
 
-## Structure du projet
-
-```text
-src/
- ├─ model/        # Logique métier (grille, joueurs, objets, règles)
- ├─ view/         # Interfaces graphiques Swing
- ├─ controller/   # Gestion des interactions et du déroulement du jeu
- ├─ utils/        # Classes utilitaires
- └─ Main.java     # Point d’entrée de l’application
-```
-
 ## Aperçu du jeu
 
 ## Licence  
