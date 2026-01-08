@@ -71,10 +71,11 @@ Ces choix permettent d’ajouter facilement de nouveaux types de bateaux, d’ar
 
 ## Aperçu du jeu
 
-
-![Menu de placement](img/placement.png)
-![Interface de jeu en debut de partie](img/debutPartie.png)
-![Interface de jeu en cours de partie](img/partieEnCours.png)
+<p align="center">
+  <img src="img/placement.png" alt="Menu de placement" width="32%" />&nbsp;
+  <img src="img/debutPartie.png" alt="Interface de jeu en debut de partie" width="32%" />&nbsp;
+  <img src="img/partieEnCours.png" alt="Interface de jeu en cours de partie" width="32%" />
+</p>
 
 ## Licence  
   
