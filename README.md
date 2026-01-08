@@ -69,21 +69,6 @@ Ces choix permettent d’ajouter facilement de nouveaux types de bateaux, d’ar
 
 ---
 
-## Installation et exécution
-
-1. **Cloner le dépôt**
-```bash
-git clone https://github.com/username/Bataille-Navale.git
-```
-
-2. **Ouvrir le projet**
-
-Ouvrir le projet dans un **IDE Java** :
-
-3. **Compiler et exécuter**
-
----
-
 ## Structure du projet
 
 ```text
